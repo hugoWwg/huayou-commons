@@ -6,7 +6,7 @@ import org.joda.time.format.DateTimeFormat;
 import java.util.Date;
 
 /**
- * @author wangweiguang133
+ * @author wwg
  */
 public class DateUtils {
 
