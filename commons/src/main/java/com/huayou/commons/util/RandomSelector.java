@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * 根据概率随机选择一个元素
  *
- * @author haha
+ * @author wwg
  */
 public class RandomSelector<T>{
 
