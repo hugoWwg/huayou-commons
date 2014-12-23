@@ -9,6 +9,7 @@ import com.huayou.commons.logger.impl.DefaultLogger;
  * 
  */
 public final class LogMgr {
+
 	private LogMgr() {
 	}
 

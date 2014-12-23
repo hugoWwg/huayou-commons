@@ -65,7 +65,6 @@ public class DefaultLogger implements ILogger {
 
 	@Override
 	public void close(boolean isSuccess) {
-		// TODO do nothing
 	}
 
 	@Override
