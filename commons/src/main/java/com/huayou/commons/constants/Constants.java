@@ -1,7 +1,7 @@
 package com.huayou.commons.constants;
 
 /**
- * @Author : wwg
+ * @Author : wwg1
  * @Date : 14-11-10
  */
 public interface Constants {
