@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * @author wwg1
+ * @author wwg
  */
 public class XssFilter implements Filter {
 
