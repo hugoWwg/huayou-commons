@@ -35,7 +35,6 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
     private int maxFormKeys = 10000;
 
     public AesJettyRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream){
-        org.eclipse.jetty.server.Response
         this.request = request;
         this.decryptInputStream = new JettyInputStream(newInputStream, originalInputStream);
     }
