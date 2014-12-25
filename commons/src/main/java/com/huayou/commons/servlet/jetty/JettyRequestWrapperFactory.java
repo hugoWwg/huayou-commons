@@ -14,6 +14,6 @@ import java.io.InputStream;
 public class JettyRequestWrapperFactory implements RequestWrapperFactory {
     @Override
     public HttpServletRequest getRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream) {
-        return new AesJettyRequestWrapper(request,newInputStream,originalInputStream);
+        return new JettyInputStreamConvertRequestWrapper(request,newInputStream,originalInputStream);
     }
 }

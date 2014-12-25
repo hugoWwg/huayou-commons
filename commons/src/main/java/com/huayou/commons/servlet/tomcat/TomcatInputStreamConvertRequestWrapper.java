@@ -17,11 +17,13 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
+ * 重新对request的输入流进行转换（如解密）
+ * <p/>
  * Created by wuqiang on 14-12-23.
  *
  * @author wuqiang
  */
-public class AesTomcatRequestWrapper implements HttpServletRequest{
+public class TomcatInputStreamConvertRequestWrapper implements HttpServletRequest {
     //org.apache.catalina.connector.Request
     private HttpServletRequest request;
     private javax.servlet.ServletInputStream decryptInputStream;
@@ -44,11 +46,13 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
      * Hash map used in the getParametersMap method.
      */
     protected ParameterMap<String, String[]> parameterMap = new ParameterMap<String, String[]>();
-    public AesTomcatRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream){
+
+    public TomcatInputStreamConvertRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream) {
         this.request = request;
         this.decryptInputStream = new TomcatInputStream(newInputStream, originalInputStream);
         parameters.setURLDecoder(urlDecoder);
     }
+
     /**
      * Read post body in an array.
      */
@@ -66,6 +70,7 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
         return len;
 
     }
+
     /**
      * Parse request parameters.
      */
@@ -78,7 +83,7 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
             // Set this every time in case limit has been changed via JMX
             parameters.setLimit(maxParameterCount);
             String enc = getCharacterEncoding();
-            if(enc!=null){
+            if (enc != null) {
                 parameters.setEncoding(enc);
             }
             String contentType = getContentType();
@@ -124,6 +129,7 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
         }
 
     }
+
     @Override
     public String getAuthType() {
         return this.request.getAuthType();
@@ -397,7 +403,7 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
 
     @Override
     public void setAttribute(String s, Object o) {
-        this.request.setAttribute(s,o);
+        this.request.setAttribute(s, o);
     }
 
     @Override
@@ -462,7 +468,7 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        return this.request.startAsync(servletRequest,servletResponse);
+        return this.request.startAsync(servletRequest, servletResponse);
     }
 
     @Override
@@ -489,10 +495,12 @@ public class AesTomcatRequestWrapper implements HttpServletRequest{
     public String changeSessionId() {
         throw new UnsupportedOperationException();
     }
+
     /*servlet-api-3.1.0才有的方法*/
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         throw new UnsupportedOperationException();
     }
+
     /*servlet-api-3.1.0才有的方法*/
     public long getContentLengthLong() {
         return getContentLength();

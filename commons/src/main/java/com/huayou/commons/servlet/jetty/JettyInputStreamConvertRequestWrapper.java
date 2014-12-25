@@ -20,12 +20,14 @@ import java.security.Principal;
 import java.util.*;
 
 /**
+ * 重新对request的输入流进行转换（如解密）
+ * <p/>
  * Created by wuqiang on 14-12-23.
  *
  * @author wuqiang
  */
-public class AesJettyRequestWrapper implements HttpServletRequest{
-//    org.eclipse.jetty.server.Request
+public class JettyInputStreamConvertRequestWrapper implements HttpServletRequest {
+    //    org.eclipse.jetty.server.Request
     private HttpServletRequest request;
     private ServletInputStream decryptInputStream;
 
@@ -34,22 +36,21 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
     private boolean _paramsExtracted = false;
     private int maxFormKeys = 10000;
 
-    public AesJettyRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream){
+    public JettyInputStreamConvertRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream) {
         this.request = request;
         this.decryptInputStream = new JettyInputStream(newInputStream, originalInputStream);
     }
 
     /* ------------------------------------------------------------ */
+
     /**
      * Extract Parameters from query string and/or form _content.
      */
-    public void extractParameters()
-    {
+    public void extractParameters() {
         if (_baseParameters == null)
             _baseParameters = new MultiMap(16);
 
-        if (_paramsExtracted)
-        {
+        if (_paramsExtracted) {
             if (_parameters == null)
                 _parameters = _baseParameters;
             return;
@@ -57,28 +58,21 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
 
         _paramsExtracted = true;
 
-        try
-        {
+        try {
             // handle any _content.
             String encoding = getCharacterEncoding();
             String content_type = getContentType();
-            if (content_type != null && content_type.length() > 0)
-            {
+            if (content_type != null && content_type.length() > 0) {
                 content_type = HttpFields.valueParameters(content_type, null);
 
-                if (MimeTypes.FORM_ENCODED.equalsIgnoreCase(content_type) && (HttpMethods.POST.equals(getMethod()) || HttpMethods.PUT.equals(getMethod())))
-                {
+                if (MimeTypes.FORM_ENCODED.equalsIgnoreCase(content_type) && (HttpMethods.POST.equals(getMethod()) || HttpMethods.PUT.equals(getMethod()))) {
                     int content_length = getContentLength();
-                    if (content_length != 0)
-                    {
-                        try
-                        {
+                    if (content_length != 0) {
+                        try {
                             InputStream in = getInputStream();
                             // Add form params to query params
                             UrlEncoded.decodeTo(in, _baseParameters, encoding, -1, maxFormKeys);
-                        }
-                        catch (IOException e)
-                        {
+                        } catch (IOException e) {
                             LogMgr.getLogger(this.getClass()).error(e);
                         }
                     }
@@ -87,22 +81,18 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
             }
             if (_parameters == null)
                 _parameters = _baseParameters;
-            else if (_parameters != _baseParameters)
-            {
+            else if (_parameters != _baseParameters) {
                 // Merge parameters (needed if parameters extracted after a forward).
                 Iterator iter = _baseParameters.entrySet().iterator();
-                while (iter.hasNext())
-                {
-                    Map.Entry entry = (Map.Entry)iter.next();
-                    String name = (String)entry.getKey();
+                while (iter.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    String name = (String) entry.getKey();
                     Object values = entry.getValue();
                     for (int i = 0; i < LazyList.size(values); i++)
-                        _parameters.add(name,LazyList.get(values,i));
+                        _parameters.add(name, LazyList.get(values, i));
                 }
             }
-        }
-        finally
-        {
+        } finally {
             // ensure params always set (even if empty) after extraction
             if (_parameters == null)
                 _parameters = _baseParameters;
@@ -305,7 +295,7 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
     public String getParameter(String s) {
         if (!_paramsExtracted)
             extractParameters();
-        return (String)_parameters.getValue(s,0);
+        return (String) _parameters.getValue(s, 0);
     }
 
     @Override
@@ -371,7 +361,7 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
 
     @Override
     public void setAttribute(String s, Object o) {
-        this.request.setAttribute(s,o);
+        this.request.setAttribute(s, o);
     }
 
     @Override
@@ -436,7 +426,7 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        return this.request.startAsync(servletRequest,servletResponse);
+        return this.request.startAsync(servletRequest, servletResponse);
     }
 
     @Override
@@ -463,10 +453,12 @@ public class AesJettyRequestWrapper implements HttpServletRequest{
     public String changeSessionId() {
         throw new UnsupportedOperationException();
     }
+
     /*servlet-api-3.1.0才有的方法*/
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         throw new UnsupportedOperationException();
     }
+
     /*servlet-api-3.1.0才有的方法*/
     public long getContentLengthLong() {
         return getContentLength();

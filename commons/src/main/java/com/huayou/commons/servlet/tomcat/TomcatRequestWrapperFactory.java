@@ -14,6 +14,6 @@ import java.io.InputStream;
 public class TomcatRequestWrapperFactory implements RequestWrapperFactory {
     @Override
     public HttpServletRequest getRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream) {
-        return new AesTomcatRequestWrapper(request,newInputStream,originalInputStream);
+        return new TomcatInputStreamConvertRequestWrapper(request,newInputStream,originalInputStream);
     }
 }
