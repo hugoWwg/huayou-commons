@@ -1,5 +1,6 @@
 package com.huayou.commons.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -29,6 +30,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -248,7 +250,7 @@ public class HXRequest {
     /**
      * 批量IM用户注册
      */
-
+    @Deprecated
     public Map<String, String> batchCreateNewIMUsersSingle(String orgName, String appName,
                                                            ArrayNode dataArrayNode,
                                                            String clientId, String clientSecret,
@@ -317,6 +319,111 @@ public class HXRequest {
                 if (null == retNewMap) {
                     retNewMap =
                         sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
+                } else {
+                    break;
+                }
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+        } catch (Exception e) {
+            logger.error("batchCreateNewIMUsersSingle Exception--->" + e);
+        }
+        return retMap;
+    }
+
+    public static class HuanxinUser implements Serializable {
+
+        private String username;
+        private String password;
+
+        public HuanxinUser(String username, String password) {
+            if (username == null || password == null) {
+                throw new RuntimeException("username and password should not be null!");
+            }
+            this.username = username;
+            this.password = password;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+    }
+
+    /**
+     * 批量IM用户注册
+     */
+    public Map<String, String> batchCreateNewIMUsers(String orgName, String appName,
+                                                     List<HuanxinUser> users,
+                                                     String clientId, String clientSecret,
+                                                     String access_token,
+                                                     Long expireTime) {
+        if (users == null || users.size() == 0) {
+            throw new RuntimeException("users should not be empty!");
+        }
+        String jsonData = null;
+        Map<String, String> retMap = Maps.newHashMap();
+
+        String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
+        try {
+            // check properties that must be provided
+            List<HuanxinUser> readyUsers = new ArrayList<HuanxinUser>(users.size());
+            for (HuanxinUser user : users) {
+                if (user != null) {
+                    readyUsers.add(user);
+                }
+            }
+            if (readyUsers.size() == 0) {
+                throw new RuntimeException("this is no user ready to create in huanxin!");
+            }
+            jsonData = JSON.toJSONString(readyUsers);
+            List<NameValuePair> headers = new ArrayList<NameValuePair>();
+            headers.add(new BasicNameValuePair("Content-Type", "application/json"));
+
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
+                //token is not expireTime
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
+            } else {
+                //token is expireTime
+                isAccessTokenExpired = true;
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization",
+                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+            }
+
+            Map<String, String>
+                retNewMap =
+                sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
+            if (isAccessTokenExpired) {
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN, newTokenMap.get(HX_ACCESS_TOKEN));
+            }
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            for (int i = 1; i <= 3; i++) {
+                if (null == retNewMap) {
+                    retNewMap =
+                        sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
                 } else {
                     break;
                 }
@@ -556,55 +663,11 @@ public class HXRequest {
 
 
     public static void main(String[] args) {
-
-        final HXRequest hXRequest = new HXRequest();
-        final String orgName = "huayouapp";
-        final String appName = "huayoutest";
-        final String clientId = "YXA6FT__IGO6EeSBDXdqMW3jAQ";
-        final String clientSecret = "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ";
-
-        final Map<String, String>
-            tokenMap =
-            hXRequest.getHXToken(orgName, appName, clientId, clientSecret);
-
-//        Map<String, String> registerMap = hXRequest.createNewIMUserSingle(orgName, appName, "24486", "518d03c29", clientId, clientSecret, "YWMtR-gF4mpCEeSWGOHZBMqGcAAAAUrYBDqRbTtMAo55mX1XFEfB0_R_6eORfPs", null);
-
-//        String usernamePrefix = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 9);
-
-//        ArrayNode arrayNode = factory.arrayNode();
-//        for (int i = 0; i < 100; i++) {
-//            ObjectNode userNode = factory.objectNode();
-//            userNode.put("username", usernamePrefix + "_" + i);
-//            userNode.put("password", i + 100000);
-//
-//            arrayNode.add(userNode);
-//        }
-//
-//        Map<String, String> batchRegisterMap = hXRequest.batchCreateNewIMUsersSingle(orgName, appName, arrayNode, clientId, clientSecret, tokenMap.get(HX_ACCESS_TOKEN), tokenMap.get(HX_TOKEN_EXPIRE_TIME));
-//
-//        Map<String, String> updatePasswordMap = hXRequest.resetIMUserPassword(orgName, appName, "fei", clientId, clientSecret, "454554", tokenMap.get(HX_ACCESS_TOKEN), tokenMap.get(HX_TOKEN_EXPIRE_TIME));
-//        for (int i = 0; i < 5; i++) {
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-        for (int i = 0; i < 1; i++) {
-            Map<String, String>
-                batchDeleteUsersByCreateTime =
-                hXRequest.batchDeleteUsersByCreateTime(
-                    orgName, appName, "desc", clientId, clientSecret,
-                    tokenMap.get(HX_ACCESS_TOKEN), tokenMap.get(HX_TOKEN_EXPIRE_TIME),
-                    "500");
-            System.out.println(batchDeleteUsersByCreateTime);
-        }
-//                }
-//            });
-//        }
-
-        System.out.println(tokenMap);
-//        System.out.println(registerMap);
-//        System.out.println(batchRegisterMap);
-//        System.out.println(updatePasswordMap);
-//        System.out.println(batchDeleteUsersByCreateTime);
+        List<HuanxinUser> users = new ArrayList<HuanxinUser>();
+        users.add(new HuanxinUser("u1", "p1"));
+        users.add(new HuanxinUser("u2", "p2"));
+        String jsonData = JSON.toJSONString(users);
+        System.out.println(jsonData);
     }
 
 }
