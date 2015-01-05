@@ -43,8 +43,8 @@ import java.util.Map;
 public class HXRequest {
 
     private static Logger logger = LoggerFactory.getLogger(HXRequest.class);
-    private static final String HX_TOKEN_EXPIRE_TIME = "tokenExpireTime";
-    private static final String HX_ACCESS_TOKEN = "access_token";
+    public static final String HX_TOKEN_EXPIRE_TIME = "tokenExpireTime";
+    public static final String HX_ACCESS_TOKEN = "access_token";
     private static final String HX_DOMAIN_NAME = "https://a1.easemob.com/";
     private static JsonNodeFactory factory = new JsonNodeFactory(false);
 
@@ -133,7 +133,8 @@ public class HXRequest {
 
                 SSLSocketFactory socketFactory = new SSLSocketFactory(ctx);
 
-                httpClient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, socketFactory));
+                httpClient.getConnectionManager().getSchemeRegistry().register(
+                    new Scheme("https", 443, socketFactory));
 
             } catch (Exception e) {
                 logger.error("getHXToken Exception--->" + e);
@@ -154,7 +155,7 @@ public class HXRequest {
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
 
-        Long accessToken = null;
+        Long expireTime = null;
 
         try {
             JSONObject jSONObject = new JSONObject();
@@ -164,21 +165,27 @@ public class HXRequest {
             headers.add(new BasicNameValuePair("Content-Type", "application/json"));
 
             if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
-                accessToken = Long.parseLong(tokenExpireTime);
+                expireTime = Long.parseLong(tokenExpireTime);
             }
-            if (null != accessToken && new Date().getTime() < accessToken.longValue()) {
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
                 //token is not expireTime
                 headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
             } else {
+                isAccessTokenExpired = true;
                 //token is expireTime
-                Map<String, String> tokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-                retMap.put(HX_TOKEN_EXPIRE_TIME, tokenMap.get(HX_TOKEN_EXPIRE_TIME));
-                headers.add(new BasicNameValuePair("Authorization", "Bearer " + tokenMap.get(HX_ACCESS_TOKEN)));
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
 
             Map<String, String> retNewMap = sendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap);
-
+            if(isAccessTokenExpired){
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN,newTokenMap.get(HX_ACCESS_TOKEN));
+            }
             if (null != retNewMap) return retNewMap;
 
             for (int i = 1; i <= 3; i++) {
@@ -211,7 +218,7 @@ public class HXRequest {
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
 
-        Long accessToken = null;
+        Long expireTime = null;
 
         try {
             // check properties that must be provided
@@ -239,20 +246,26 @@ public class HXRequest {
             headers.add(new BasicNameValuePair("Content-Type", "application/json"));
 
             if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
-                accessToken = Long.parseLong(tokenExpireTime);
+                expireTime = Long.parseLong(tokenExpireTime);
             }
-            if (null != accessToken && new Date().getTime() < accessToken.longValue()) {
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
                 //token is not expireTime
                 headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
             } else {
                 //token is expireTime
-                Map<String, String> tokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-                retMap.put(HX_TOKEN_EXPIRE_TIME, tokenMap.get(HX_TOKEN_EXPIRE_TIME));
-                headers.add(new BasicNameValuePair("Authorization", "Bearer " + tokenMap.get(HX_ACCESS_TOKEN)));
+                isAccessTokenExpired = true;
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String> retNewMap = sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
-
+            if(isAccessTokenExpired){
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN,newTokenMap.get(HX_ACCESS_TOKEN));
+            }
             if (null != retNewMap) return retNewMap;
 
             for (int i = 1; i <= 3; i++) {
@@ -283,28 +296,32 @@ public class HXRequest {
 
         String resetIMUserPasswordUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
 
-        Long accessToken = null;
+        Long expireTime = null;
         try {
             JSONObject jSONObject = new JSONObject();
             jSONObject.put("newpassword", newPassword);
             List<NameValuePair> headers = new ArrayList<NameValuePair>();
 
             if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
-                accessToken = Long.parseLong(tokenExpireTime);
+                expireTime = Long.parseLong(tokenExpireTime);
             }
-
-            if (null != accessToken && new Date().getTime() < accessToken.longValue()) {
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
                 //token is not expireTime
                 headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
             } else {
                 //token is expireTime
-                Map<String, String> tokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-                retMap.put(HX_TOKEN_EXPIRE_TIME, tokenMap.get(HX_TOKEN_EXPIRE_TIME));
-                headers.add(new BasicNameValuePair("Authorization", "Bearer " + tokenMap.get(HX_ACCESS_TOKEN)));
+                isAccessTokenExpired = true;
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
-
             Map<String, String> retNewMap = sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
-
+            if(isAccessTokenExpired){
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN,newTokenMap.get(HX_ACCESS_TOKEN));
+            }
             if (null != retNewMap) return retNewMap;
 
             for (int i = 1; i <= 3; i++) {
@@ -332,7 +349,7 @@ public class HXRequest {
 
         Map<String, String> retMap = Maps.newHashMap();
 
-        Long accessToken = null;
+        Long expireTime = null;
 
         if (!"desc".equals(orderByTimeFlag) && !"asc".equals(orderByTimeFlag)) {
             retMap.put("error message", "Wrong format parameter orderByTimeFlag");
@@ -348,23 +365,28 @@ public class HXRequest {
         List<NameValuePair> headers = new ArrayList<NameValuePair>();
 
         if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
-            accessToken = Long.parseLong(tokenExpireTime);
+            expireTime = Long.parseLong(tokenExpireTime);
         }
-
-        if (null != accessToken && new Date().getTime() < accessToken.longValue()) {
+        boolean isAccessTokenExpired = false;
+        Map<String, String> newTokenMap = null;
+        if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
             //token is not expireTime
             headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
         } else {
             //token is expireTime
-            Map<String, String> tokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-            retMap.put(HX_TOKEN_EXPIRE_TIME, tokenMap.get(HX_TOKEN_EXPIRE_TIME));
-            headers.add(new BasicNameValuePair("Authorization", "Bearer " + tokenMap.get(HX_ACCESS_TOKEN)));
+            isAccessTokenExpired = true;
+            newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+            headers.add(new BasicNameValuePair("Authorization", "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
         }
 
         try {
 
             Map<String, String> retNewMap = sendRequest(headers, batchDeleteUsersUrl, null, "delete", retMap);
-
+            if(isAccessTokenExpired){
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN,newTokenMap.get(HX_ACCESS_TOKEN));
+            }
             if (null != retNewMap) return retNewMap;
 
             for (int i = 1; i <= 3; i++) {
@@ -470,7 +492,10 @@ public class HXRequest {
 //                @Override
 //                public void run() {
                     for (int i = 0; i < 1; i++) {
-                        Map<String, String> batchDeleteUsersByCreateTime = hXRequest.batchDeleteUsersByCreateTime(orgName, appName, "desc", clientId, clientSecret, tokenMap.get(HX_ACCESS_TOKEN), tokenMap.get(HX_TOKEN_EXPIRE_TIME), "500");
+                        Map<String, String> batchDeleteUsersByCreateTime = hXRequest.batchDeleteUsersByCreateTime(
+                            orgName, appName, "desc", clientId, clientSecret,
+                            tokenMap.get(HX_ACCESS_TOKEN), tokenMap.get(HX_TOKEN_EXPIRE_TIME),
+                            "500");
                         System.out.println(batchDeleteUsersByCreateTime);
                     }
 //                }
