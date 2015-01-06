@@ -1,5 +1,9 @@
 package com.huayou.commons.util;
 
+import com.alibaba.fastjson.JSON;
+
+import java.math.BigDecimal;
+
 /**
  * Created by wuqiang on 15-1-6. 地理位置相关Util
  */
@@ -13,6 +17,10 @@ public class GeoLocationUtils {
      * 地球平均半径（单位千米）
      */
     public static final double EARTH_RADIUS_IN_KILOMETER = 6378.0;
+    /**
+     * 小数位保留位数：6位
+     */
+    public static final int DEFAULT_SCALE = 6;
     //北纬90度：北极
     //南纬90度：南极
 
@@ -26,7 +34,7 @@ public class GeoLocationUtils {
          */
         private double minLongitude;
         /**
-         * 最打（最东边）经度
+         * 最大（最东边）经度
          */
         private double maxLongitude;
         /**
@@ -166,10 +174,18 @@ public class GeoLocationUtils {
         lon_min = lon_min * 180 / pi;
         lon_max = lon_max * 180 / pi;
         CoordinateRange coordinateRange = new CoordinateRange();
-        coordinateRange.setMinLatitude(lat_min);
-        coordinateRange.setMinLongitude(lon_min);
-        coordinateRange.setMaxLatitude(lat_max);
-        coordinateRange.setMaxLongitude(lon_max);
+        coordinateRange.setMinLatitude(
+            new BigDecimal(lat_min).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                .doubleValue());
+        coordinateRange.setMinLongitude(
+            new BigDecimal(lon_min).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                .doubleValue());
+        coordinateRange.setMaxLatitude(
+            new BigDecimal(lat_max).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                .doubleValue());
+        coordinateRange.setMaxLongitude(
+            new BigDecimal(lon_max).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                .doubleValue());
         return coordinateRange;
     }
 
@@ -218,19 +234,23 @@ public class GeoLocationUtils {
                                                 double longitude1, double latitude2,
                                                 double longitude2,
                                                 double radius) {
-        return (2 * Math.atan2(Math.sqrt(Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
-                                         * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2) +
-                                         Math.cos(latitude2 * Math.PI / 180) * Math
-                                             .cos(latitude1 * Math.PI / 180)
-                                         * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
-                                         * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)),
-                               Math.sqrt(1 - Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
-                                             * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
-                                         + Math.cos(latitude2 * Math.PI / 180) * Math
-                                   .cos(latitude1 * Math.PI / 180)
-                                           * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
-                                           * Math
-                                   .sin((longitude1 - longitude2) * Math.PI / 180 / 2)))) * radius;
+        double
+            result =
+            (2 * Math.atan2(Math.sqrt(Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                      * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2) +
+                                      Math.cos(latitude2 * Math.PI / 180) * Math
+                                          .cos(latitude1 * Math.PI / 180)
+                                      * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
+                                      * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)),
+                            Math.sqrt(1 - Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                          * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                      + Math.cos(latitude2 * Math.PI / 180) * Math
+                                .cos(latitude1 * Math.PI / 180)
+                                        * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
+                                        * Math
+                                .sin((longitude1 - longitude2) * Math.PI / 180 / 2)))) * radius;
+        return new BigDecimal(result).setScale(DEFAULT_SCALE,
+                                               BigDecimal.ROUND_HALF_UP).doubleValue();
 //        return Math.acos(
 //            Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2)
 //                                                        * Math.cos(longitude1 - longitude2))
@@ -240,5 +260,10 @@ public class GeoLocationUtils {
     public static void main(String[] args) {
         System.out
             .println(getCoordinatesDistanceInMeter(30.186895, 120.139610, 30.186834, 120.139549));
+        CoordinateRange range = getBoundingCoordinateRangeInMeter(30.186895, 120.139610, 1000);
+        System.out.println("最小（靠近赤道）纬度 minLatitude : " + range.minLatitude);
+        System.out.println("最大（靠近两级）纬度 maxLatitude : " + range.maxLatitude);
+        System.out.println("最小（最西边）经度 minLongitude : " + range.minLongitude);
+        System.out.println("最大（最东边）经度 maxLongitude : " + range.maxLongitude);
     }
 }
