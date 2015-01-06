@@ -218,9 +218,27 @@ public class GeoLocationUtils {
                                                 double longitude1, double latitude2,
                                                 double longitude2,
                                                 double radius) {
-        return Math.acos(
-            Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2)
-                                                        * Math.cos(longitude1 - longitude2))
-               * radius;
+        return (2 * Math.atan2(Math.sqrt(Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                         * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2) +
+                                         Math.cos(latitude2 * Math.PI / 180) * Math
+                                             .cos(latitude1 * Math.PI / 180)
+                                         * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
+                                         * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)),
+                               Math.sqrt(1 - Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                             * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                         + Math.cos(latitude2 * Math.PI / 180) * Math
+                                   .cos(latitude1 * Math.PI / 180)
+                                           * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
+                                           * Math
+                                   .sin((longitude1 - longitude2) * Math.PI / 180 / 2)))) * radius;
+//        return Math.acos(
+//            Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2)
+//                                                        * Math.cos(longitude1 - longitude2))
+//               * radius;
+    }
+
+    public static void main(String[] args) {
+        System.out
+            .println(getCoordinatesDistanceInMeter(30.186895, 120.139610, 30.186834, 120.139549));
     }
 }
