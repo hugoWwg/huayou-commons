@@ -99,8 +99,6 @@ public class HXRequest {
                     long tokenExpireTime = DateUtils.daysAfter(7).getTime();
                     retMap.put(HX_TOKEN_EXPIRE_TIME, String.valueOf(tokenExpireTime));
                 }
-
-                System.out.println(results);
             }
         } catch (Exception e) {
             logger.error("getHXToken Exception--->" + e);
