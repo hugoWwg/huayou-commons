@@ -18,6 +18,8 @@ public class JedisPoolFactoryBean implements FactoryBean<JedisPool> {
   private String host;
   private int port;
   private int timeout;
+  private String password;
+  private int database;
   private int threadCount;
 
   public String getHost() {
@@ -44,6 +46,22 @@ public class JedisPoolFactoryBean implements FactoryBean<JedisPool> {
     this.timeout = timeout;
   }
 
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public int getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(int database) {
+    this.database = database;
+  }
+
   public int getThreadCount() {
     return threadCount;
   }
@@ -57,13 +75,15 @@ public class JedisPoolFactoryBean implements FactoryBean<JedisPool> {
     // 设置Pool大小，设为与线程数等大，并屏蔽掉idle checking
     JedisPoolConfig poolConfig = JedisUtils.createPoolConfig(threadCount, threadCount);
     // create jedis pool
-    JedisPool jedisPool = new JedisPool(poolConfig, host, port, timeout);
-    logger.info("create jedisPool[{}] ,host[{}] port[{}] timeout[{}] threadCount[{}]",
+    JedisPool jedisPool = new JedisPool(poolConfig, host, port, timeout, password, database);
+    logger.info("create jedisPool[{}] ,host[{}] port[{}] timeout[{}] threadCount[{}] password[{}] database[{}]",
                 ToStringBuilder.reflectionToString(jedisPool),
                 host,
                 port,
                 timeout,
-                threadCount);
+                threadCount,
+                password,
+                database);
     return jedisPool;
   }
 
