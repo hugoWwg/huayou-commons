@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -29,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import java.io.Serializable;
+import java.io.*;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -117,11 +114,11 @@ public class HXRequest {
         if (isSSL) {
             X509TrustManager xtm = new X509TrustManager() {
                 public void checkClientTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
+                        throws CertificateException {
                 }
 
                 public void checkServerTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
+                        throws CertificateException {
                 }
 
                 public X509Certificate[] getAcceptedIssuers() {
@@ -137,7 +134,7 @@ public class HXRequest {
                 SSLSocketFactory socketFactory = new SSLSocketFactory(ctx);
 
                 httpClient.getConnectionManager().getSchemeRegistry().register(
-                    new Scheme("https", 443, socketFactory));
+                        new Scheme("https", 443, socketFactory));
 
             } catch (Exception e) {
                 logger.error("getHXToken Exception--->" + e);
@@ -161,7 +158,7 @@ public class HXRequest {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return createNewIMUserSingle(orgName, appName, IMUserName, IMPassword, clientId,
-                                     clientSecret, access_token, expireTime);
+                clientSecret, access_token, expireTime);
     }
 
     /**
@@ -175,6 +172,8 @@ public class HXRequest {
                                                      Long expireTime) {
 
         Map<String, String> retMap = Maps.newHashMap();
+        String errorFileDir = "/usr/local/hxlogs/createNewIMUserSingle_error.txt";
+        BufferedOutputStream bufferedErrorOutputStream = null;
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
 
@@ -195,12 +194,12 @@ public class HXRequest {
                 //token is expireTime
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -222,8 +221,23 @@ public class HXRequest {
                 return retNewMap;
             }
 
+            if (null == retNewMap) {
+                File errorFile = new File(errorFileDir);
+                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                IMUserName = IMUserName + "\n";
+                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
+                bufferedErrorOutputStream.flush();
+                return retNewMap;
+            }
+
         } catch (Exception e) {
             logger.error("createNewIMUserSingle Exception--->" + e);
+        }finally {
+            try {
+                bufferedErrorOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return retMap;
     }
@@ -242,7 +256,7 @@ public class HXRequest {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return batchCreateNewIMUsersSingle(orgName, appName, dataArrayNode, clientId, clientSecret,
-                                           access_token, expireTime);
+                access_token, expireTime);
     }
 
     /**
@@ -272,7 +286,7 @@ public class HXRequest {
                         logger.error("Property that named username must be provided .");
 
                         objectNode
-                            .put("message", "Property that named username must be provided .");
+                                .put("message", "Property that named username must be provided .");
                     }
 
                     if (null != jsonNode && !jsonNode.has("password")) {
@@ -280,7 +294,7 @@ public class HXRequest {
                         logger.error("Property that named password must be provided .");
 
                         objectNode
-                            .put("message", "Property that named password must be provided .");
+                                .put("message", "Property that named password must be provided .");
                     }
                 }
             }
@@ -298,12 +312,12 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -316,7 +330,7 @@ public class HXRequest {
             for (int i = 1; i <= 3; i++) {
                 if (null == retNewMap) {
                     retNewMap =
-                        sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
+                            sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
                 } else {
                     break;
                 }
@@ -403,12 +417,12 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -421,7 +435,7 @@ public class HXRequest {
             for (int i = 1; i <= 3; i++) {
                 if (null == retNewMap) {
                     retNewMap =
-                        sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
+                            sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
                 } else {
                     break;
                 }
@@ -450,7 +464,7 @@ public class HXRequest {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return resetIMUserPassword(orgName, appName, IMUserName, clientId, clientSecret,
-                                   newPassword, access_token, expireTime);
+                newPassword, access_token, expireTime);
     }
 
     /**
@@ -462,10 +476,11 @@ public class HXRequest {
                                                    String access_token, Long expireTime) {
 
         Map<String, String> retMap = Maps.newHashMap();
+        String errorFileDir = "/usr/local/hxlogs/resetIMUserPassword_error.txt";
+        BufferedOutputStream bufferedErrorOutputStream = null;
 
-        String
-            resetIMUserPasswordUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
+        String resetIMUserPasswordUrl =
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
 
         try {
             JSONObject jSONObject = new JSONObject();
@@ -482,11 +497,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -499,7 +514,7 @@ public class HXRequest {
             for (int i = 1; i <= 3; i++) {
                 if (null == retNewMap) {
                     retNewMap =
-                        sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
+                            sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
                 } else {
                     break;
                 }
@@ -509,8 +524,23 @@ public class HXRequest {
                 return retNewMap;
             }
 
+            if (null == retNewMap) {
+                File errorFile = new File(errorFileDir);
+                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                IMUserName = IMUserName + "\n";
+                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
+                bufferedErrorOutputStream.flush();
+                return retNewMap;
+            }
+
         } catch (Exception e) {
             logger.error("resetIMUserPassword Exception--->" + e);
+        } finally {
+            try {
+                bufferedErrorOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return retMap;
     }
@@ -529,7 +559,7 @@ public class HXRequest {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return batchDeleteUsersByCreateTime(orgName, appName, orderByTimeFlag, clientId,
-                                            clientSecret, access_token, expireTime, limit);
+                clientSecret, access_token, expireTime, limit);
     }
 
     /**
@@ -554,8 +584,8 @@ public class HXRequest {
         }
 
         String
-            batchDeleteUsersUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/users?limit=" + limit;
+                batchDeleteUsersUrl =
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/users?limit=" + limit;
 
         List<NameValuePair> headers = new ArrayList<NameValuePair>();
 
@@ -569,14 +599,14 @@ public class HXRequest {
             isAccessTokenExpired = true;
             newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
             headers.add(new BasicNameValuePair("Authorization",
-                                               "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                    "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
         }
 
         try {
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, batchDeleteUsersUrl, null, "delete", retMap);
+                    retNewMap =
+                    sendRequest(headers, batchDeleteUsersUrl, null, "delete", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -661,11 +691,11 @@ public class HXRequest {
 
 
     public static void main(String[] args) {
-        List<HuanxinUser> users = new ArrayList<HuanxinUser>();
-        users.add(new HuanxinUser("u1", "p1"));
-        users.add(new HuanxinUser("u2", "p2"));
-        String jsonData = JSON.toJSONString(users);
-        System.out.println(jsonData);
+//        List<HuanxinUser> users = new ArrayList<HuanxinUser>();
+//        users.add(new HuanxinUser("u1", "p1"));
+//        users.add(new HuanxinUser("u2", "p2"));
+//        String jsonData = JSON.toJSONString(users);
+//        System.out.println(jsonData);
     }
 
 }
