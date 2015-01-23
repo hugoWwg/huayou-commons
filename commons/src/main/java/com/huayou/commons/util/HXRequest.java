@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -221,7 +222,7 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            if (null == retNewMap) {
+            if (null == retNewMap || retMap.size() == 0) {
                 File errorFile = new File(errorFileDir);
                 bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
                 IMUserName = IMUserName + "\n";
@@ -232,7 +233,7 @@ public class HXRequest {
 
         } catch (Exception e) {
             logger.error("createNewIMUserSingle Exception--->" + e);
-        }finally {
+        } finally {
             try {
                 bufferedErrorOutputStream.close();
             } catch (IOException e) {
@@ -524,7 +525,7 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            if (null == retNewMap) {
+            if (null == retNewMap || retMap.size() == 0) {
                 File errorFile = new File(errorFileDir);
                 bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
                 IMUserName = IMUserName + "\n";
