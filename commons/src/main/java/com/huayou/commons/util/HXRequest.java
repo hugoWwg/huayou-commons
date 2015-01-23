@@ -2,13 +2,9 @@ package com.huayou.commons.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -153,13 +149,13 @@ public class HXRequest {
                                                      String IMUserName,
                                                      String IMPassword, String clientId,
                                                      String clientSecret, String access_token,
-                                                     String tokenExpireTime) {
+                                                     String tokenExpireTime, String recordErrorFile) {
         Long expireTime = null;
         if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return createNewIMUserSingle(orgName, appName, IMUserName, IMPassword, clientId,
-                clientSecret, access_token, expireTime);
+                clientSecret, access_token, expireTime, recordErrorFile);
     }
 
     /**
@@ -170,10 +166,9 @@ public class HXRequest {
                                                      String IMUserName,
                                                      String IMPassword, String clientId,
                                                      String clientSecret, String access_token,
-                                                     Long expireTime) {
+                                                     Long expireTime, String recordErrorFile) {
 
         Map<String, String> retMap = Maps.newHashMap();
-        String errorFileDir = "/usr/local/hxlogs/createNewIMUserSingle_error.txt";
         BufferedOutputStream bufferedErrorOutputStream = null;
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
@@ -223,9 +218,9 @@ public class HXRequest {
             }
 
             if (null == retNewMap || retMap.size() == 0) {
-                File errorFile = new File(errorFileDir);
+                File errorFile = new File(recordErrorFile);
                 bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
-                IMUserName = IMUserName + "\n";
+                IMUserName = "createNewIMUserSingle fail : " + IMUserName + "\n";
                 bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
                 bufferedErrorOutputStream.flush();
                 return retNewMap;
@@ -243,109 +238,6 @@ public class HXRequest {
         return retMap;
     }
 
-    /**
-     * 批量IM用户注册；兼容老项目
-     */
-    @Deprecated
-    public Map<String, String> batchCreateNewIMUsersSingle(String orgName, String appName,
-                                                           ArrayNode dataArrayNode,
-                                                           String clientId, String clientSecret,
-                                                           String access_token,
-                                                           String tokenExpireTime) {
-        Long expireTime = null;
-        if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
-            expireTime = Long.parseLong(tokenExpireTime);
-        }
-        return batchCreateNewIMUsersSingle(orgName, appName, dataArrayNode, clientId, clientSecret,
-                access_token, expireTime);
-    }
-
-    /**
-     * 批量IM用户注册
-     */
-    @Deprecated
-    public Map<String, String> batchCreateNewIMUsersSingle(String orgName, String appName,
-                                                           ArrayNode dataArrayNode,
-                                                           String clientId, String clientSecret,
-                                                           String access_token,
-                                                           Long expireTime) {
-
-        ObjectNode objectNode = factory.objectNode();
-
-        Map<String, String> retMap = Maps.newHashMap();
-
-        String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
-
-        try {
-            // check properties that must be provided
-            if (dataArrayNode.isArray()) {
-
-                for (JsonNode jsonNode : dataArrayNode) {
-
-                    if (null != jsonNode && !jsonNode.has("username")) {
-
-                        logger.error("Property that named username must be provided .");
-
-                        objectNode
-                                .put("message", "Property that named username must be provided .");
-                    }
-
-                    if (null != jsonNode && !jsonNode.has("password")) {
-
-                        logger.error("Property that named password must be provided .");
-
-                        objectNode
-                                .put("message", "Property that named password must be provided .");
-                    }
-                }
-            }
-
-            List<NameValuePair> headers = new ArrayList<NameValuePair>();
-            headers.add(new BasicNameValuePair("Content-Type", "application/json"));
-
-            boolean isAccessTokenExpired = false;
-            Map<String, String> newTokenMap = null;
-            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
-                //token is not expireTime
-                headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
-            } else {
-                //token is expireTime
-                isAccessTokenExpired = true;
-                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-                headers.add(new BasicNameValuePair("Authorization",
-                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
-            }
-
-            Map<String, String>
-                    retNewMap =
-                    sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
-            if (isAccessTokenExpired) {
-                // access_token 失效，本方法内进行重新获取过
-                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
-                retMap.put(HX_ACCESS_TOKEN, newTokenMap.get(HX_ACCESS_TOKEN));
-            }
-            if (null != retNewMap) {
-                return retNewMap;
-            }
-
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                            sendRequest(headers, registerIMUserUrl, dataArrayNode, "post", retMap);
-                } else {
-                    break;
-                }
-            }
-
-            if (null != retNewMap) {
-                return retNewMap;
-            }
-
-        } catch (Exception e) {
-            logger.error("batchCreateNewIMUsersSingle Exception--->" + e);
-        }
-        return retMap;
-    }
 
     public static class HuanxinUser implements Serializable {
 
@@ -385,11 +277,12 @@ public class HXRequest {
                                                      List<HuanxinUser> users,
                                                      String clientId, String clientSecret,
                                                      String access_token,
-                                                     Long expireTime) {
+                                                     Long expireTime, String recordErrorFile) {
         if (users == null || users.size() == 0) {
             throw new RuntimeException("users should not be empty!");
         }
         String jsonData = null;
+        BufferedOutputStream bufferedErrorOutputStream = null;
         Map<String, String> retMap = Maps.newHashMap();
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
@@ -446,8 +339,27 @@ public class HXRequest {
                 return retNewMap;
             }
 
+            if (null == retNewMap || retMap.size() == 0) {
+                File errorFile = new File(recordErrorFile);
+                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+
+                String errorUserNameStr = "";
+                for (HuanxinUser huanxinUser : readyUsers) {
+                    errorUserNameStr += "batchCreateNewIMUsers fail: " + huanxinUser.getUsername() + "\n";
+                }
+                bufferedErrorOutputStream.write(errorUserNameStr.getBytes(), 0, errorUserNameStr.length());
+                bufferedErrorOutputStream.flush();
+                return retNewMap;
+            }
+
         } catch (Exception e) {
             logger.error("batchCreateNewIMUsersSingle Exception--->" + e);
+        } finally {
+            try {
+                bufferedErrorOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return retMap;
     }
@@ -459,13 +371,13 @@ public class HXRequest {
     public Map<String, String> resetIMUserPassword(String orgName, String appName,
                                                    String IMUserName, String clientId,
                                                    String clientSecret, String newPassword,
-                                                   String access_token, String tokenExpireTime) {
+                                                   String access_token, String tokenExpireTime, String recordErrorFile) {
         Long expireTime = null;
         if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return resetIMUserPassword(orgName, appName, IMUserName, clientId, clientSecret,
-                newPassword, access_token, expireTime);
+                newPassword, access_token, expireTime, recordErrorFile);
     }
 
     /**
@@ -474,10 +386,9 @@ public class HXRequest {
     public Map<String, String> resetIMUserPassword(String orgName, String appName,
                                                    String IMUserName, String clientId,
                                                    String clientSecret, String newPassword,
-                                                   String access_token, Long expireTime) {
+                                                   String access_token, Long expireTime, String recordErrorFile) {
 
         Map<String, String> retMap = Maps.newHashMap();
-        String errorFileDir = "/usr/local/hxlogs/resetIMUserPassword_error.txt";
         BufferedOutputStream bufferedErrorOutputStream = null;
 
         String resetIMUserPasswordUrl =
@@ -526,9 +437,9 @@ public class HXRequest {
             }
 
             if (null == retNewMap || retMap.size() == 0) {
-                File errorFile = new File(errorFileDir);
+                File errorFile = new File(recordErrorFile);
                 bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
-                IMUserName = IMUserName + "\n";
+                IMUserName = "resetIMUserPassword fail : " + IMUserName + "\n";
                 bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
                 bufferedErrorOutputStream.flush();
                 return retNewMap;
@@ -546,94 +457,6 @@ public class HXRequest {
         return retMap;
     }
 
-    /**
-     * 批量删除IM用户；兼容老项目
-     */
-    @Deprecated
-    public Map<String, String> batchDeleteUsersByCreateTime(String orgName, String appName,
-                                                            String orderByTimeFlag, String clientId,
-                                                            String clientSecret,
-                                                            String access_token,
-                                                            String tokenExpireTime, String limit) {
-        Long expireTime = null;
-        if (org.apache.commons.lang3.math.NumberUtils.isNumber(tokenExpireTime)) {
-            expireTime = Long.parseLong(tokenExpireTime);
-        }
-        return batchDeleteUsersByCreateTime(orgName, appName, orderByTimeFlag, clientId,
-                clientSecret, access_token, expireTime, limit);
-    }
-
-    /**
-     * 批量删除IM用户
-     */
-
-    public Map<String, String> batchDeleteUsersByCreateTime(String orgName, String appName,
-                                                            String orderByTimeFlag, String clientId,
-                                                            String clientSecret,
-                                                            String access_token,
-                                                            Long expireTime, String limit) {
-
-        Map<String, String> retMap = Maps.newHashMap();
-
-        if (!"desc".equals(orderByTimeFlag) && !"asc".equals(orderByTimeFlag)) {
-            retMap.put("error message", "Wrong format parameter orderByTimeFlag");
-            return retMap;
-        }
-
-        if (!org.apache.commons.lang3.math.NumberUtils.isNumber(limit)) {
-            retMap.put("error message", "Wrong format parameter limit");
-        }
-
-        String
-                batchDeleteUsersUrl =
-                HX_DOMAIN_NAME + orgName + "/" + appName + "/users?limit=" + limit;
-
-        List<NameValuePair> headers = new ArrayList<NameValuePair>();
-
-        boolean isAccessTokenExpired = false;
-        Map<String, String> newTokenMap = null;
-        if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
-            //token is not expireTime
-            headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
-        } else {
-            //token is expireTime
-            isAccessTokenExpired = true;
-            newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-            headers.add(new BasicNameValuePair("Authorization",
-                    "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
-        }
-
-        try {
-
-            Map<String, String>
-                    retNewMap =
-                    sendRequest(headers, batchDeleteUsersUrl, null, "delete", retMap);
-            if (isAccessTokenExpired) {
-                // access_token 失效，本方法内进行重新获取过
-                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
-                retMap.put(HX_ACCESS_TOKEN, newTokenMap.get(HX_ACCESS_TOKEN));
-            }
-            if (null != retNewMap) {
-                return retNewMap;
-            }
-
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap = sendRequest(headers, batchDeleteUsersUrl, null, "delete", retMap);
-                } else {
-                    break;
-                }
-            }
-
-            if (null != retNewMap) {
-                return retNewMap;
-            }
-
-        } catch (Exception e) {
-            logger.error("batchDeleteUsersByCreateTime Exception--->" + e);
-        }
-        return retMap;
-    }
 
     /**
      * 发送请求
