@@ -230,7 +230,7 @@ public class HXRequest {
             logger.error("createNewIMUserSingle Exception--->" + e);
         } finally {
             try {
-                bufferedErrorOutputStream.close();
+                if(bufferedErrorOutputStream!=null)bufferedErrorOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -356,7 +356,7 @@ public class HXRequest {
             logger.error("batchCreateNewIMUsersSingle Exception--->" + e);
         } finally {
             try {
-                bufferedErrorOutputStream.close();
+                if(bufferedErrorOutputStream!=null)bufferedErrorOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -449,7 +449,7 @@ public class HXRequest {
             logger.error("resetIMUserPassword Exception--->" + e);
         } finally {
             try {
-                bufferedErrorOutputStream.close();
+                if(bufferedErrorOutputStream!=null)bufferedErrorOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
