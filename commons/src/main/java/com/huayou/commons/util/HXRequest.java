@@ -12,6 +12,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
@@ -219,32 +220,24 @@ public class HXRequest {
             }
 
             if (null == retNewMap || retMap.size() == 0) {
-                File errorFile = new File(recordErrorFile);
-                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName = DateTime.now() + " createNewIMUserSingle fail,用户名：" + IMUserName + "\n";
-                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
-                bufferedErrorOutputStream.flush();
+                fileWriter.write(IMUserName);
+                fileWriter.close();
                 return retNewMap;
             }
 
         } catch (Exception e) {
             logger.error("createNewIMUserSingle Exception--->" + e);
-            File errorFile = new File(recordErrorFile);
             try {
-                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName = DateTime.now() + " createNewIMUserSingle Exception,用户名：" + IMUserName + "\n";
-                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
-                bufferedErrorOutputStream.flush();
+                fileWriter.write(IMUserName);
+                fileWriter.close();
             } catch (IOException e1) {
                 logger.error("createNewIMUserSingle IOException--->" + e);
             }
 
-        } finally {
-            try {
-                if (bufferedErrorOutputStream != null) bufferedErrorOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return retMap;
     }
@@ -352,37 +345,28 @@ public class HXRequest {
             }
 
             if (null == retNewMap || retMap.size() == 0) {
-                File errorFile = new File(recordErrorFile);
-                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
-
-                String errorUserNameStr = "";
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                String errorUserNameStr="";
                 for (HuanxinUser huanxinUser : readyUsers) {
-                    errorUserNameStr = DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser.getUsername() + "\n";
+                    errorUserNameStr += DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser.getUsername() + "\n";
                 }
-                bufferedErrorOutputStream.write(errorUserNameStr.getBytes(), 0, errorUserNameStr.length());
-                bufferedErrorOutputStream.flush();
+                fileWriter.write(errorUserNameStr);
+                fileWriter.close();
                 return retNewMap;
             }
 
         } catch (Exception e) {
             logger.error("batchCreateNewIMUsersSingle Exception--->" + e);
-            File errorFile = new File(recordErrorFile);
             try {
                 String errorUserNameStr = "";
-                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 for (HuanxinUser huanxinUser : readyUsers) {
-                    errorUserNameStr = DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser.getUsername() + "\n";
+                    errorUserNameStr += DateTime.now() + " batchCreateNewIMUsers Exception,用户名：" + huanxinUser.getUsername() + "\n";
                 }
-                bufferedErrorOutputStream.write(errorUserNameStr.getBytes(), 0, errorUserNameStr.length());
-                bufferedErrorOutputStream.flush();
+                fileWriter.write(errorUserNameStr);
+                fileWriter.close();
             } catch (IOException e1) {
                 logger.error("batchCreateNewIMUsers IOException--->" + e);
-            }
-        } finally {
-            try {
-                if (bufferedErrorOutputStream != null) bufferedErrorOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return retMap;
@@ -418,6 +402,8 @@ public class HXRequest {
         String resetIMUserPasswordUrl =
                 HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
 
+//        String resetIMUserPasswordUrl = "http://requestb.in/q51808q5";
+
         try {
             JSONObject jSONObject = new JSONObject();
             jSONObject.put("newpassword", newPassword);
@@ -437,7 +423,7 @@ public class HXRequest {
             }
             Map<String, String>
                     retNewMap =
-                    sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
+                    sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "PUT", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -450,7 +436,7 @@ public class HXRequest {
             for (int i = 1; i <= 3; i++) {
                 if (null == retNewMap) {
                     retNewMap =
-                            sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "post", retMap);
+                            sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "PUT", retMap);
                 } else {
                     break;
                 }
@@ -461,30 +447,23 @@ public class HXRequest {
             }
 
             if (null == retNewMap || retMap.size() == 0) {
-                File errorFile = new File(recordErrorFile);
-                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName = DateTime.now() + " resetIMUserPassword fail,用户名：" + IMUserName + "\n";
-                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
-                bufferedErrorOutputStream.flush();
+                fileWriter.write(IMUserName);
+                fileWriter.close();
                 return retNewMap;
             }
 
+
         } catch (Exception e) {
             logger.error("resetIMUserPassword Exception--->" + e);
-            File errorFile = new File(recordErrorFile);
             try {
-                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
-                IMUserName = DateTime.now() + " resetIMUserPassword Exception,用户名：" + IMUserName + "\n";
-                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
-                bufferedErrorOutputStream.flush();
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                IMUserName = DateTime.now() + " resetIMUserPassword Exception fail,用户名：" + IMUserName + "\n";
+                fileWriter.write(IMUserName);
+                fileWriter.close();
             } catch (IOException e1) {
                 logger.error("resetIMUserPassword IOException--->" + e);
-            }
-        } finally {
-            try {
-                if (bufferedErrorOutputStream != null) bufferedErrorOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return retMap;
@@ -523,7 +502,17 @@ public class HXRequest {
                     }
                 }
                 response = httpClient.execute(httpDelete);
+            } else if (method.equals("PUT")) {
+                HttpPut httpPut = new HttpPut(url.toURI());
+                if (null != headers && !headers.isEmpty()) {
+                    for (NameValuePair nameValuePair : headers) {
+                        httpPut.addHeader(nameValuePair.getName(), nameValuePair.getValue());
+                    }
+                }
+                response = httpClient.execute(httpPut);
             }
+
+            System.out.printf(response.toString());
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 HttpEntity entity = response.getEntity();
