@@ -18,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -220,7 +221,7 @@ public class HXRequest {
             if (null == retNewMap || retMap.size() == 0) {
                 File errorFile = new File(recordErrorFile);
                 bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
-                IMUserName = "createNewIMUserSingle fail : " + IMUserName + "\n";
+                IMUserName = DateTime.now() + " createNewIMUserSingle fail,用户名：" + IMUserName + "\n";
                 bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
                 bufferedErrorOutputStream.flush();
                 return retNewMap;
@@ -228,9 +229,19 @@ public class HXRequest {
 
         } catch (Exception e) {
             logger.error("createNewIMUserSingle Exception--->" + e);
+            File errorFile = new File(recordErrorFile);
+            try {
+                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                IMUserName = DateTime.now() + " createNewIMUserSingle Exception,用户名：" + IMUserName + "\n";
+                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
+                bufferedErrorOutputStream.flush();
+            } catch (IOException e1) {
+                logger.error("createNewIMUserSingle IOException--->" + e);
+            }
+
         } finally {
             try {
-                if(bufferedErrorOutputStream!=null)bufferedErrorOutputStream.close();
+                if (bufferedErrorOutputStream != null) bufferedErrorOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -286,9 +297,10 @@ public class HXRequest {
         Map<String, String> retMap = Maps.newHashMap();
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
+        List<HuanxinUser> readyUsers = new ArrayList<HuanxinUser>(users.size());
+
         try {
             // check properties that must be provided
-            List<HuanxinUser> readyUsers = new ArrayList<HuanxinUser>(users.size());
             for (HuanxinUser user : users) {
                 if (user != null) {
                     readyUsers.add(user);
@@ -345,7 +357,7 @@ public class HXRequest {
 
                 String errorUserNameStr = "";
                 for (HuanxinUser huanxinUser : readyUsers) {
-                    errorUserNameStr += "batchCreateNewIMUsers fail: " + huanxinUser.getUsername() + "\n";
+                    errorUserNameStr = DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser.getUsername() + "\n";
                 }
                 bufferedErrorOutputStream.write(errorUserNameStr.getBytes(), 0, errorUserNameStr.length());
                 bufferedErrorOutputStream.flush();
@@ -354,9 +366,21 @@ public class HXRequest {
 
         } catch (Exception e) {
             logger.error("batchCreateNewIMUsersSingle Exception--->" + e);
+            File errorFile = new File(recordErrorFile);
+            try {
+                String errorUserNameStr = "";
+                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                for (HuanxinUser huanxinUser : readyUsers) {
+                    errorUserNameStr = DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser.getUsername() + "\n";
+                }
+                bufferedErrorOutputStream.write(errorUserNameStr.getBytes(), 0, errorUserNameStr.length());
+                bufferedErrorOutputStream.flush();
+            } catch (IOException e1) {
+                logger.error("batchCreateNewIMUsers IOException--->" + e);
+            }
         } finally {
             try {
-                if(bufferedErrorOutputStream!=null)bufferedErrorOutputStream.close();
+                if (bufferedErrorOutputStream != null) bufferedErrorOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -439,7 +463,7 @@ public class HXRequest {
             if (null == retNewMap || retMap.size() == 0) {
                 File errorFile = new File(recordErrorFile);
                 bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
-                IMUserName = "resetIMUserPassword fail : " + IMUserName + "\n";
+                IMUserName = DateTime.now() + " resetIMUserPassword fail,用户名：" + IMUserName + "\n";
                 bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
                 bufferedErrorOutputStream.flush();
                 return retNewMap;
@@ -447,9 +471,18 @@ public class HXRequest {
 
         } catch (Exception e) {
             logger.error("resetIMUserPassword Exception--->" + e);
+            File errorFile = new File(recordErrorFile);
+            try {
+                bufferedErrorOutputStream = new BufferedOutputStream(new FileOutputStream(errorFile));
+                IMUserName = DateTime.now() + " resetIMUserPassword Exception,用户名：" + IMUserName + "\n";
+                bufferedErrorOutputStream.write(IMUserName.getBytes(), 0, IMUserName.length());
+                bufferedErrorOutputStream.flush();
+            } catch (IOException e1) {
+                logger.error("resetIMUserPassword IOException--->" + e);
+            }
         } finally {
             try {
-                if(bufferedErrorOutputStream!=null)bufferedErrorOutputStream.close();
+                if (bufferedErrorOutputStream != null) bufferedErrorOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
