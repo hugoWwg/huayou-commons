@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -171,8 +172,6 @@ public class HXRequest {
                                                      Long expireTime, String recordErrorFile) {
 
         Map<String, String> retMap = Maps.newHashMap();
-        BufferedOutputStream bufferedErrorOutputStream = null;
-
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
 
         try {
@@ -286,7 +285,6 @@ public class HXRequest {
             throw new RuntimeException("users should not be empty!");
         }
         String jsonData = null;
-        BufferedOutputStream bufferedErrorOutputStream = null;
         Map<String, String> retMap = Maps.newHashMap();
 
         String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
@@ -319,9 +317,8 @@ public class HXRequest {
                         "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
-            Map<String, String>
-                    retNewMap =
-                    sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
+            Map<String, String> retNewMap = sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
+
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -346,7 +343,7 @@ public class HXRequest {
 
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                String errorUserNameStr="";
+                String errorUserNameStr = "";
                 for (HuanxinUser huanxinUser : readyUsers) {
                     errorUserNameStr += DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser.getUsername() + "\n";
                 }
@@ -397,17 +394,12 @@ public class HXRequest {
                                                    String access_token, Long expireTime, String recordErrorFile) {
 
         Map<String, String> retMap = Maps.newHashMap();
-        BufferedOutputStream bufferedErrorOutputStream = null;
-
-        String resetIMUserPasswordUrl =
-                HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
-
-//        String resetIMUserPasswordUrl = "http://requestb.in/q51808q5";
+        String resetIMUserPasswordUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
 
         try {
             JSONObject jSONObject = new JSONObject();
             jSONObject.put("newpassword", newPassword);
-            List<NameValuePair> headers = new ArrayList<NameValuePair>();
+            List<NameValuePair> headers = Lists.newArrayList();
 
             boolean isAccessTokenExpired = false;
             Map<String, String> newTokenMap = null;
@@ -418,12 +410,11 @@ public class HXRequest {
                 //token is expireTime
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-                headers.add(new BasicNameValuePair("Authorization",
-                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                headers.add(new BasicNameValuePair("Authorization","Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
                     retNewMap =
-                    sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "PUT", retMap);
+                    sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "put", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -435,8 +426,7 @@ public class HXRequest {
 
             for (int i = 1; i <= 3; i++) {
                 if (null == retNewMap) {
-                    retNewMap =
-                            sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "PUT", retMap);
+                    retNewMap = sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "put", retMap);
                 } else {
                     break;
                 }
@@ -453,7 +443,6 @@ public class HXRequest {
                 fileWriter.close();
                 return retNewMap;
             }
-
 
         } catch (Exception e) {
             logger.error("resetIMUserPassword Exception--->" + e);
@@ -502,7 +491,7 @@ public class HXRequest {
                     }
                 }
                 response = httpClient.execute(httpDelete);
-            } else if (method.equals("PUT")) {
+            } else if (method.equals("put")) {
                 HttpPut httpPut = new HttpPut(url.toURI());
                 if (null != headers && !headers.isEmpty()) {
                     for (NameValuePair nameValuePair : headers) {
@@ -511,8 +500,6 @@ public class HXRequest {
                 }
                 response = httpClient.execute(httpPut);
             }
-
-            System.out.printf(response.toString());
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 HttpEntity entity = response.getEntity();
