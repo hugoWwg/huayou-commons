@@ -498,6 +498,7 @@ public class HXRequest {
                         httpPut.addHeader(nameValuePair.getName(), nameValuePair.getValue());
                     }
                 }
+                httpPut.setEntity(new StringEntity(dataBody.toString(), "UTF-8"));
                 response = httpClient.execute(httpPut);
             }
 
