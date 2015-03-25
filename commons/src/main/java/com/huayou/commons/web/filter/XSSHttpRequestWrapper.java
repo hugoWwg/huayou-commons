@@ -4,9 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
- *  @author wwg
+ * @author wwg
  */
-public class XSSHttpRequestWrapper  extends HttpServletRequestWrapper {
+public class XSSHttpRequestWrapper extends HttpServletRequestWrapper {
 
     public XSSHttpRequestWrapper(HttpServletRequest servletRequest) {
         super(servletRequest);

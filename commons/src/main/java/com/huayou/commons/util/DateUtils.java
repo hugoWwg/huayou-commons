@@ -76,6 +76,7 @@ public class DateUtils {
     public static Date startOfNDaysBefore2(int n) {
         return DateTime.now().minusDays(n).withTimeAtStartOfDay().toDate();
     }
+
     //几天以前的最后时刻
     public static Date endOfNDaysBefore2(int n) {
         return DateTime.now().minusDays(n).secondOfDay().withMaximumValue().toDate();

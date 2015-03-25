@@ -9,13 +9,15 @@ import java.io.InputStream;
  *
  * @author wuqiang
  */
-public class JettyInputStream extends ServletInputStream{
+public class JettyInputStream extends ServletInputStream {
     private InputStream input;
     private ServletInputStream originalInputStream;
+
     protected JettyInputStream(InputStream newInputStream, ServletInputStream originalInputStream) {
         this.input = newInputStream;
         this.originalInputStream = originalInputStream;
     }
+
     @Override
     public int read()
             throws IOException {
@@ -36,7 +38,7 @@ public class JettyInputStream extends ServletInputStream{
     @Override
     public int read(final byte[] b, final int off, final int len)
             throws IOException {
-        return this.input.read(b,off,len);
+        return this.input.read(b, off, len);
     }
 
 
@@ -54,7 +56,7 @@ public class JettyInputStream extends ServletInputStream{
     @Override
     public void close() throws IOException {
         this.input.close();
-        if(this.originalInputStream != null){
+        if (this.originalInputStream != null) {
             try {
                 this.originalInputStream.close();
             } catch (Exception e) {

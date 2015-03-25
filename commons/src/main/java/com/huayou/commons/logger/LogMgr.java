@@ -6,7 +6,6 @@ import com.huayou.commons.logger.impl.DefaultLogger;
  * 用于管理ILogger
  *
  * @author wu-qiang
- *
  */
 public final class LogMgr {
     private LogMgr() {
@@ -18,6 +17,7 @@ public final class LogMgr {
      */
     private static final DefaultLogger globalDefaultLogger = new DefaultLogger(
             LogMgr.class);
+
     /**
      * 获取当前线程的Logger对象<br>
      * 如果线程没有绑定则返回null
@@ -27,6 +27,7 @@ public final class LogMgr {
     public static ILogger getLoggerMaybeNull() {
         return loggerThreadLocal.get();
     }
+
     /**
      * 获取当前线程的Logger对象<br>
      * 如果线程没有绑定则返回默认的全局Logger对象
@@ -59,7 +60,6 @@ public final class LogMgr {
     }
 
     /**
-     *
      * 获取当前线程的Logger对象<br>
      * 如果线程没有绑定则返回创建一个new DefaultLogger(loggerMainUserClass)
      *

@@ -7,8 +7,6 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.LazyList;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

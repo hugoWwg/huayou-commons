@@ -9,14 +9,16 @@ import java.io.InputStream;
  *
  * @author wuqiang
  */
-public class TomcatInputStream extends org.apache.catalina.connector.CoyoteInputStream{
+public class TomcatInputStream extends org.apache.catalina.connector.CoyoteInputStream {
     private InputStream input;
     private ServletInputStream originalInputStream;
+
     protected TomcatInputStream(InputStream newInputStream, ServletInputStream originalInputStream) {
         super(null);
         this.input = newInputStream;
         this.originalInputStream = originalInputStream;
     }
+
     @Override
     public int read()
             throws IOException {
@@ -37,7 +39,7 @@ public class TomcatInputStream extends org.apache.catalina.connector.CoyoteInput
     @Override
     public int read(final byte[] b, final int off, final int len)
             throws IOException {
-        return this.input.read(b,off,len);
+        return this.input.read(b, off, len);
     }
 
 
@@ -55,7 +57,7 @@ public class TomcatInputStream extends org.apache.catalina.connector.CoyoteInput
     @Override
     public void close() throws IOException {
         this.input.close();
-        if(this.originalInputStream != null){
+        if (this.originalInputStream != null) {
             try {
                 this.originalInputStream.close();
             } catch (Exception e) {

@@ -9,16 +9,16 @@ import java.io.IOException;
  */
 public class XssFilter implements Filter {
 
-  public void init(FilterConfig filterConfig) throws ServletException {
-  }
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
-  public void destroy() {
-  }
+    public void destroy() {
+    }
 
-  public void doFilter(ServletRequest request, ServletResponse response,
-                       FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain chain) throws IOException, ServletException {
 
-    chain.doFilter(new XSSHttpRequestWrapper((HttpServletRequest) request),
-                   response);
-  }
+        chain.doFilter(new XSSHttpRequestWrapper((HttpServletRequest) request),
+                response);
+    }
 }

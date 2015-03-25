@@ -14,69 +14,69 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class JedisPoolFactoryBean implements FactoryBean<JedisPool> {
 
-  private static Logger logger = LoggerFactory.getLogger(JedisPoolFactoryBean.class);
-  private String host;
-  private int port;
-  private int timeout;
-  private String password;
-  private int database;
-  private int threadCount;
+    private static Logger logger = LoggerFactory.getLogger(JedisPoolFactoryBean.class);
+    private String host;
+    private int port;
+    private int timeout;
+    private String password;
+    private int database;
+    private int threadCount;
 
-  public String getHost() {
-    return host;
-  }
+    public String getHost() {
+        return host;
+    }
 
-  public void setHost(String host) {
-    this.host = host;
-  }
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-  public int getPort() {
-    return port;
-  }
+    public int getPort() {
+        return port;
+    }
 
-  public void setPort(int port) {
-    this.port = port;
-  }
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-  public int getTimeout() {
-    return timeout;
-  }
+    public int getTimeout() {
+        return timeout;
+    }
 
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
-  }
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public int getDatabase() {
-    return database;
-  }
+    public int getDatabase() {
+        return database;
+    }
 
-  public void setDatabase(int database) {
-    this.database = database;
-  }
+    public void setDatabase(int database) {
+        this.database = database;
+    }
 
-  public int getThreadCount() {
-    return threadCount;
-  }
+    public int getThreadCount() {
+        return threadCount;
+    }
 
-  public void setThreadCount(int threadCount) {
-    this.threadCount = threadCount;
-  }
+    public void setThreadCount(int threadCount) {
+        this.threadCount = threadCount;
+    }
 
-  @Override
-  public JedisPool getObject() throws Exception {
-    // 设置Pool大小，设为与线程数等大，并屏蔽掉idle checking
-    JedisPoolConfig poolConfig = JedisUtils.createPoolConfig(threadCount, threadCount);
-    // create jedis pool
-    JedisPool jedisPool = new JedisPool(poolConfig, host, port, timeout, password, database);
-    logger.info("create jedisPool[{}] ,host[{}] port[{}] timeout[{}] threadCount[{}] password[{}] database[{}]",
+    @Override
+    public JedisPool getObject() throws Exception {
+        // 设置Pool大小，设为与线程数等大，并屏蔽掉idle checking
+        JedisPoolConfig poolConfig = JedisUtils.createPoolConfig(threadCount, threadCount);
+        // create jedis pool
+        JedisPool jedisPool = new JedisPool(poolConfig, host, port, timeout, password, database);
+        logger.info("create jedisPool[{}] ,host[{}] port[{}] timeout[{}] threadCount[{}] password[{}] database[{}]",
                 ToStringBuilder.reflectionToString(jedisPool),
                 host,
                 port,
@@ -84,18 +84,18 @@ public class JedisPoolFactoryBean implements FactoryBean<JedisPool> {
                 threadCount,
                 password,
                 database);
-    return jedisPool;
-  }
+        return jedisPool;
+    }
 
-  @Override
-  public Class<?> getObjectType() {
-    return JedisPool.class;
-  }
+    @Override
+    public Class<?> getObjectType() {
+        return JedisPool.class;
+    }
 
-  @Override
-  public boolean isSingleton() {
-    return true;
-  }
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 
 
 }

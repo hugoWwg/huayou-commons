@@ -1,7 +1,5 @@
 package com.huayou.commons.util;
 
-import com.alibaba.fastjson.JSON;
-
 import java.math.BigDecimal;
 
 /**
@@ -175,17 +173,17 @@ public class GeoLocationUtils {
         lon_max = lon_max * 180 / pi;
         CoordinateRange coordinateRange = new CoordinateRange();
         coordinateRange.setMinLatitude(
-            new BigDecimal(lat_min).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
-                .doubleValue());
+                new BigDecimal(lat_min).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                        .doubleValue());
         coordinateRange.setMinLongitude(
-            new BigDecimal(lon_min).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
-                .doubleValue());
+                new BigDecimal(lon_min).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                        .doubleValue());
         coordinateRange.setMaxLatitude(
-            new BigDecimal(lat_max).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
-                .doubleValue());
+                new BigDecimal(lat_max).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                        .doubleValue());
         coordinateRange.setMaxLongitude(
-            new BigDecimal(lon_max).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
-                .doubleValue());
+                new BigDecimal(lon_max).setScale(DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP)
+                        .doubleValue());
         return coordinateRange;
     }
 
@@ -201,8 +199,8 @@ public class GeoLocationUtils {
                                                        double longitude1, double latitude2,
                                                        double longitude2) {
         return getCoordinatesDistance(latitude1,
-                                      longitude1, latitude2,
-                                      longitude2, EARTH_RADIUS_IN_METER);
+                longitude1, latitude2,
+                longitude2, EARTH_RADIUS_IN_METER);
     }
 
     /**
@@ -217,8 +215,8 @@ public class GeoLocationUtils {
                                                            double longitude1, double latitude2,
                                                            double longitude2) {
         return getCoordinatesDistance(latitude1,
-                                      longitude1, latitude2,
-                                      longitude2, EARTH_RADIUS_IN_KILOMETER);
+                longitude1, latitude2,
+                longitude2, EARTH_RADIUS_IN_KILOMETER);
     }
 
     /**
@@ -235,22 +233,22 @@ public class GeoLocationUtils {
                                                 double longitude2,
                                                 double radius) {
         double
-            result =
-            (2 * Math.atan2(Math.sqrt(Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
-                                      * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2) +
-                                      Math.cos(latitude2 * Math.PI / 180) * Math
-                                          .cos(latitude1 * Math.PI / 180)
-                                      * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
-                                      * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)),
-                            Math.sqrt(1 - Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
-                                          * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
-                                      + Math.cos(latitude2 * Math.PI / 180) * Math
-                                .cos(latitude1 * Math.PI / 180)
+                result =
+                (2 * Math.atan2(Math.sqrt(Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2) +
+                                Math.cos(latitude2 * Math.PI / 180) * Math
+                                        .cos(latitude1 * Math.PI / 180)
                                         * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
-                                        * Math
+                                        * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)),
+                        Math.sqrt(1 - Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                * Math.sin((latitude1 - latitude2) * Math.PI / 180 / 2)
+                                + Math.cos(latitude2 * Math.PI / 180) * Math
+                                .cos(latitude1 * Math.PI / 180)
+                                * Math.sin((longitude1 - longitude2) * Math.PI / 180 / 2)
+                                * Math
                                 .sin((longitude1 - longitude2) * Math.PI / 180 / 2)))) * radius;
         return new BigDecimal(result).setScale(DEFAULT_SCALE,
-                                               BigDecimal.ROUND_HALF_UP).doubleValue();
+                BigDecimal.ROUND_HALF_UP).doubleValue();
 //        return Math.acos(
 //            Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2)
 //                                                        * Math.cos(longitude1 - longitude2))
@@ -259,7 +257,7 @@ public class GeoLocationUtils {
 
     public static void main(String[] args) {
         System.out
-            .println(getCoordinatesDistanceInMeter(30.186895, 120.139610, 30.186834, 120.139549));
+                .println(getCoordinatesDistanceInMeter(30.186895, 120.139610, 30.186834, 120.139549));
         CoordinateRange range = getBoundingCoordinateRangeInMeter(30.186895, 120.139610, 1000);
         System.out.println("最小（靠近赤道）纬度 minLatitude : " + range.minLatitude);
         System.out.println("最大（靠近两级）纬度 maxLatitude : " + range.maxLatitude);

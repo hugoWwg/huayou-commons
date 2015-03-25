@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -410,7 +412,7 @@ public class HXRequest {
                 //token is expireTime
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
-                headers.add(new BasicNameValuePair("Authorization","Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
                     retNewMap =

@@ -10,7 +10,7 @@ import java.util.Random;
  *
  * @author wwg
  */
-public class RandomSelector<T>{
+public class RandomSelector<T> {
 
     private Map<T, Integer> items = Maps.newHashMap();
     private Random rand = new Random();
