@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.SerializationUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 
@@ -222,7 +223,9 @@ public class JedisTemplate {
 
             @Override
             public void action(Jedis jedis) {
-                jedis.set(key, value);
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.set(key, value);
+                pipeline.syncAndReturnAll();
             }
         });
     }
@@ -232,7 +235,9 @@ public class JedisTemplate {
 
             @Override
             public void action(Jedis jedis) {
-                jedis.set(key, value);
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.set(key, value);
+                pipeline.syncAndReturnAll();
             }
         });
     }
@@ -242,7 +247,9 @@ public class JedisTemplate {
 
             @Override
             public void action(Jedis jedis) {
-                jedis.set(key, SerializationUtils.serialize(value));
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.set(key, SerializationUtils.serialize(value));
+                pipeline.syncAndReturnAll();
             }
         });
     }
@@ -252,7 +259,9 @@ public class JedisTemplate {
 
             @Override
             public void action(Jedis jedis) {
-                jedis.setex(key, seconds, value);
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.setex(key, seconds, value);
+                pipeline.syncAndReturnAll();
             }
         });
     }
@@ -262,7 +271,9 @@ public class JedisTemplate {
 
             @Override
             public void action(Jedis jedis) {
-                jedis.setex(key, seconds, value);
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.setex(key, seconds, value);
+                pipeline.syncAndReturnAll();
             }
         });
     }
@@ -272,7 +283,9 @@ public class JedisTemplate {
 
             @Override
             public void action(Jedis jedis) {
-                jedis.setex(key, seconds, SerializationUtils.serialize(value));
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.setex(key, seconds, SerializationUtils.serialize(value));
+                pipeline.syncAndReturnAll();
             }
         });
     }
@@ -336,7 +349,7 @@ public class JedisTemplate {
 
     /**
      * 将 key 中储存的数字值增一。
-     * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCR 操作。
+     * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 incr 操作。
      * 如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。
      */
     public long incr(final String key) {
