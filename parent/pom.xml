@@ -273,6 +273,12 @@
                 <version>${ibatis.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -280,6 +286,20 @@
     <build>
         <pluginManagement>
             <plugins>
+
+                <!-- compiler插件, 设定JDK版本 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.0</version>
+                    <configuration>
+                        <source>${jdk.version}</source>
+                        <target>${jdk.version}</target>
+                        <showWarnings>true</showWarnings>
+
+                    </configuration>
+                </plugin>
+
                 <plugin>
                     <!-- explicitly define maven-deploy-plugin after other to force exec order -->
                     <artifactId>maven-deploy-plugin</artifactId>
