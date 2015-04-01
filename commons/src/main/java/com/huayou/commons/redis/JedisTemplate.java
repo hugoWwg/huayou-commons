@@ -362,6 +362,16 @@ public class JedisTemplate {
         });
     }
 
+    public long incrBy(final String key, final long increment) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.incrBy(key, increment);
+            }
+        });
+    }
+
     public <T> T getSet(final String key, final T t) {
         return execute(new JedisAction<T>() {
             @Override
@@ -378,6 +388,16 @@ public class JedisTemplate {
             @Override
             public Long action(Jedis jedis) {
                 return jedis.decr(key);
+            }
+        });
+    }
+
+    public long decrBy(final String key, final long decrement) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.decrBy(key, decrement);
             }
         });
     }
