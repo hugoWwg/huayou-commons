@@ -386,9 +386,6 @@ public class JedisTemplate {
         });
     }
 
-    /**
-     * 设置key的过期时间，unixTime为时间戳
-     */
     public <T> long expireAt(final byte[] key, final long unixTime) {
         return execute(new JedisAction<Long>() {
 
