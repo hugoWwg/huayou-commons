@@ -101,6 +101,9 @@ public class JedisTemplate {
         });
     }
 
+    /**
+     * 获取key对应的value,支持正则
+     */
     public Set<byte[]> keys(final byte[] keyPattern) {
         return execute(new JedisAction<Set<byte[]>>() {
 
@@ -323,6 +326,82 @@ public class JedisTemplate {
         });
     }
 
+    /**
+     * 设置key的过期时间
+     */
+    public <T> long expire(final byte[] key, final int seconds) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.expire(key, seconds);
+            }
+        });
+    }
+
+    public <T> long expire(final String key, final int seconds) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.expire(key, seconds);
+            }
+        });
+    }
+
+    /**
+     * 移除给定key的生存时间,使带生存时间的key变成持久的。
+     * 当生存时间移除成功时，返回 1。
+     */
+    public <T> long persist(final String key) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.persist(key);
+            }
+        });
+    }
+
+    public <T> long persist(final byte[] key) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.persist(key);
+            }
+        });
+    }
+
+    /**
+     * 设置key的过期时间，unixTime为时间戳
+     */
+    public <T> long expireAt(final String key, final long unixTime) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.expireAt(key, unixTime);
+            }
+        });
+    }
+
+    /**
+     * 设置key的过期时间，unixTime为时间戳
+     */
+    public <T> long expireAt(final byte[] key, final long unixTime) {
+        return execute(new JedisAction<Long>() {
+
+            @Override
+            public Long action(Jedis jedis) {
+                return jedis.expireAt(key, unixTime);
+            }
+        });
+    }
+
+    /**
+     * 以秒为单位,返回给定key的有效时间，如果是-1则表示永远有效,当 key 不存在时，返回 -2 。
+     */
     public long ttl(final String key) {
         return execute(new JedisAction<Long>() {
 
@@ -333,9 +412,7 @@ public class JedisTemplate {
         });
     }
 
-    /**
-     * 返回给定key的有效时间，如果是-1则表示永远有效
-     */
+
 
     public long ttl(final byte[] key) {
         return execute(new JedisAction<Long>() {
@@ -445,7 +522,6 @@ public class JedisTemplate {
             }
         });
     }
-
 
 
     /**

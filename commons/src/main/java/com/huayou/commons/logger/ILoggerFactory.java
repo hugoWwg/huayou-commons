@@ -7,5 +7,5 @@ public interface ILoggerFactory<T, L extends ILogger> {
      * @param loggerMainUser 这个logger对象的主使用者
      * @return
      */
-    public L getLogger(T loggerMainUser);
+    L getLogger(T loggerMainUser);
 }

@@ -11,5 +11,5 @@ import java.io.InputStream;
  * @author wuqiang
  */
 public interface RequestWrapperFactory {
-    public HttpServletRequest getRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream);
+    HttpServletRequest getRequestWrapper(HttpServletRequest request, InputStream newInputStream, ServletInputStream originalInputStream);
 }
