@@ -211,13 +211,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap = sendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap =
+                retrySendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -301,7 +296,7 @@ public class HXRequest {
         String jsonData = null;
         Map<String, String> retMap = Maps.newHashMap();
 
-        String registerIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
+        String batchRegisterIMUserUrl = HX_DOMAIN_NAME + orgName + "/" + appName + "/users";
         List<HuanxinUser> readyUsers = new ArrayList<HuanxinUser>(users.size());
 
         try {
@@ -333,7 +328,7 @@ public class HXRequest {
 
             Map<String, String>
                 retNewMap =
-                sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
+                sendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap);
 
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
@@ -344,14 +339,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, registerIMUserUrl, jsonData, "post", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap =
+                retrySendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -449,14 +438,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "put", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap = retrySendRequest(headers, resetIMUserPasswordUrl,
+                                         jSONObject, "put", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -544,14 +527,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, createGroupUrl, jSONObject, "post", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap =
+                retrySendRequest(headers, createGroupUrl, jSONObject, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 String groupIdString = retMap.get("data");
@@ -631,14 +608,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, addOneUser2GroupUrl, null, "post", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap =
+                retrySendRequest(headers, addOneUser2GroupUrl, null, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -730,14 +701,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, addUsers2GroupUrl, requestDataBody, "post", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap = retrySendRequest(headers, addUsers2GroupUrl,
+                                         requestDataBody, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -777,18 +742,18 @@ public class HXRequest {
     /**
      * 群组踢人
      */
-    public Map<String, String> removeUser2Group(String orgName, String appName,
-                                                String groupId, String IMUserName,
-                                                String access_token,
-                                                String clientId, String clientSecret,
-                                                Long expireTime, String recordErrorFile) {
+    public Map<String, String> removeOneUser2Group(String orgName, String appName,
+                                                   String groupId, String IMUserName,
+                                                   String access_token,
+                                                   String clientId, String clientSecret,
+                                                   Long expireTime, String recordErrorFile) {
 
         if (Strings.isNullOrEmpty(IMUserName) || Strings.isNullOrEmpty(groupId)) {
             throw new RuntimeException("IMUserName or groupId should not be empty!");
         }
 
         Map<String, String> retMap = Maps.newHashMap();
-        String addOneUser2GroupUrl =
+        String removeOneUser2GroupUrl =
             HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" +
             groupId + "/users/" + IMUserName;
 
@@ -809,7 +774,7 @@ public class HXRequest {
             }
             Map<String, String>
                 retNewMap =
-                sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
+                sendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -820,14 +785,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap =
+                retrySendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -835,22 +794,22 @@ public class HXRequest {
 
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                IMUserName = DateTime.now() + " removeUser2Group fail,用户名：" + IMUserName + "\n";
+                IMUserName = DateTime.now() + " removeOneUser2Group fail,用户名：" + IMUserName + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
                 return retNewMap;
             }
 
         } catch (Exception e) {
-            logger.error("removeUser2Group Exception--->" + e);
+            logger.error("removeOneUser2Group Exception--->" + e);
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName =
-                    DateTime.now() + " removeUser2Group Exception fail,用户名：" + IMUserName + "\n";
+                    DateTime.now() + " removeOneUser2Group Exception fail,用户名：" + IMUserName + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
             } catch (IOException e1) {
-                logger.error("removeUser2Group IOException--->" + e);
+                logger.error("removeOneUser2Group IOException--->" + e);
             }
         }
         return retMap;
@@ -877,7 +836,7 @@ public class HXRequest {
         }
 
         Map<String, String> retMap = Maps.newHashMap();
-        String addOneUser2GroupUrl =
+        String updateGroupInfoUrl =
             HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
 
         JSONObject jSONObject = new JSONObject();
@@ -902,7 +861,7 @@ public class HXRequest {
             }
             Map<String, String>
                 retNewMap =
-                sendRequest(headers, addOneUser2GroupUrl, jSONObject, "put", retMap);
+                sendRequest(headers, updateGroupInfoUrl, jSONObject, "put", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -913,14 +872,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, addOneUser2GroupUrl, jSONObject, "put", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap = retrySendRequest(headers, updateGroupInfoUrl,
+                                         jSONObject, "put", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -968,7 +921,7 @@ public class HXRequest {
         }
 
         Map<String, String> retMap = Maps.newHashMap();
-        String addOneUser2GroupUrl =
+        String removeGroupUrl =
             HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
 
         try {
@@ -988,7 +941,7 @@ public class HXRequest {
             }
             Map<String, String>
                 retNewMap =
-                sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
+                sendRequest(headers, removeGroupUrl, null, "delete", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -999,14 +952,8 @@ public class HXRequest {
                 return retNewMap;
             }
 
-            for (int i = 1; i <= 3; i++) {
-                if (null == retNewMap) {
-                    retNewMap =
-                        sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
-                } else {
-                    break;
-                }
-            }
+            retNewMap =
+                retrySendRequest(headers, removeGroupUrl, null, "delete", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -1033,6 +980,22 @@ public class HXRequest {
             }
         }
         return retMap;
+    }
+
+
+    private Map<String, String> retrySendRequest(List<NameValuePair> headers, String requestUrl,
+                                                 Object dataBody, String method,
+                                                 Map<String, String> retMap,
+                                                 Map<String, String> retNewMap) {
+        for (int i = 1; i <= 3; i++) {
+            if (null == retNewMap) {
+                retNewMap =
+                    sendRequest(headers, requestUrl, dataBody, method, retMap);
+            } else {
+                break;
+            }
+        }
+        return retNewMap;
     }
 
 

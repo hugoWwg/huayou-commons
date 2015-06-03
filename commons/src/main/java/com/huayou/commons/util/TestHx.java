@@ -76,7 +76,7 @@ public class TestHx {
                                           _hx_token_expire_time, null);
 
 //
-//        retMap = hxRequest.removeUser2Group("huayouapp", "huayoutest",
+//        retMap = hxRequest.removeOneUser2Group("huayouapp", "huayoutest",
 //                                            "1433230960248149", "5",
 //                                            hx_access_token,
 //                                            clientId, client_secret,
