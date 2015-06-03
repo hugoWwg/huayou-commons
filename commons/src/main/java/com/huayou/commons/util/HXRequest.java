@@ -775,6 +775,268 @@ public class HXRequest {
 
 
     /**
+     * 群组踢人
+     */
+    public Map<String, String> removeUser2Group(String orgName, String appName,
+                                                String groupId, String IMUserName,
+                                                String access_token,
+                                                String clientId, String clientSecret,
+                                                Long expireTime, String recordErrorFile) {
+
+        if (Strings.isNullOrEmpty(IMUserName) || Strings.isNullOrEmpty(groupId)) {
+            throw new RuntimeException("IMUserName or groupId should not be empty!");
+        }
+
+        Map<String, String> retMap = Maps.newHashMap();
+        String addOneUser2GroupUrl =
+            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" +
+            groupId + "/users/" + IMUserName;
+
+        try {
+            List<NameValuePair> headers = Lists.newArrayList();
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
+                //token is not expireTime
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
+            } else {
+                //token is expireTime
+                isAccessTokenExpired = true;
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization",
+                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+            }
+            Map<String, String>
+                retNewMap =
+                sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
+            if (isAccessTokenExpired) {
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN, newTokenMap.get(HX_ACCESS_TOKEN));
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            for (int i = 1; i <= 3; i++) {
+                if (null == retNewMap) {
+                    retNewMap =
+                        sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
+                } else {
+                    break;
+                }
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            if (null == retNewMap || retMap.size() == 0) {
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                IMUserName = DateTime.now() + " removeUser2Group fail,用户名：" + IMUserName + "\n";
+                fileWriter.write(IMUserName);
+                fileWriter.close();
+                return retNewMap;
+            }
+
+        } catch (Exception e) {
+            logger.error("removeUser2Group Exception--->" + e);
+            try {
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                IMUserName =
+                    DateTime.now() + " removeUser2Group Exception fail,用户名：" + IMUserName + "\n";
+                fileWriter.write(IMUserName);
+                fileWriter.close();
+            } catch (IOException e1) {
+                logger.error("removeUser2Group IOException--->" + e);
+            }
+        }
+        return retMap;
+    }
+
+
+    /**
+     * 修改群组信息
+     */
+    public Map<String, String> updateGroupInfo(String orgName, String appName,
+                                               String groupId, String groupName,
+                                               String description, String maxUsers,
+                                               String access_token, String clientId,
+                                               String clientSecret,
+                                               Long expireTime, String recordErrorFile) {
+
+        if (Strings.isNullOrEmpty(groupId)) {
+            throw new RuntimeException("groupId should not be empty!");
+        }
+
+        if (Strings.isNullOrEmpty(groupName) && Strings.isNullOrEmpty(description)
+            && Strings.isNullOrEmpty(maxUsers)) {
+            throw new RuntimeException("parameter should not be empty!");
+        }
+
+        Map<String, String> retMap = Maps.newHashMap();
+        String addOneUser2GroupUrl =
+            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
+
+        JSONObject jSONObject = new JSONObject();
+        jSONObject.put("groupname", groupName);
+        jSONObject.put("description", description);
+        jSONObject.put("maxusers", maxUsers);
+
+        try {
+            List<NameValuePair> headers = Lists.newArrayList();
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
+                //token is not expireTime
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
+            } else {
+                //token is expireTime
+                isAccessTokenExpired = true;
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization",
+                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+            }
+            Map<String, String>
+                retNewMap =
+                sendRequest(headers, addOneUser2GroupUrl, jSONObject, "put", retMap);
+            if (isAccessTokenExpired) {
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN, newTokenMap.get(HX_ACCESS_TOKEN));
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            for (int i = 1; i <= 3; i++) {
+                if (null == retNewMap) {
+                    retNewMap =
+                        sendRequest(headers, addOneUser2GroupUrl, jSONObject, "put", retMap);
+                } else {
+                    break;
+                }
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            if (null == retNewMap || retMap.size() == 0) {
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                groupName = DateTime.now() + " updateGroupInfo fail,"
+                            + "修改信息如下: 群组名(groupName)：" +
+                            groupName + ",描述(description)为：" + description +
+                            ",成员上限(maxUsers)为：" + maxUsers + "\n";
+                fileWriter.write(groupName);
+                fileWriter.close();
+                return retNewMap;
+            }
+
+        } catch (Exception e) {
+            logger.error("updateGroupInfo Exception--->" + e);
+            try {
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                groupName = DateTime.now() + " updateGroupInfo Exception fail,"
+                            + "修改信息如下: 群组名(groupName)：" +
+                            groupName + ",描述(description)为：" + description +
+                            ",成员上限(maxUsers)为：" + maxUsers + "\n";
+                fileWriter.write(groupName);
+                fileWriter.close();
+            } catch (IOException e1) {
+                logger.error("updateGroupInfo IOException--->" + e);
+            }
+        }
+        return retMap;
+    }
+
+
+    /**
+     * 解散群组
+     */
+    public Map<String, String> removeGroup(String orgName, String appName,
+                                           String groupId, String access_token,
+                                           String clientId, String clientSecret,
+                                           Long expireTime, String recordErrorFile) {
+
+        if (Strings.isNullOrEmpty(groupId)) {
+            throw new RuntimeException("groupId should not be empty!");
+        }
+
+        Map<String, String> retMap = Maps.newHashMap();
+        String addOneUser2GroupUrl =
+            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
+
+        try {
+            List<NameValuePair> headers = Lists.newArrayList();
+            boolean isAccessTokenExpired = false;
+            Map<String, String> newTokenMap = null;
+
+            if (null != expireTime && new Date().getTime() < expireTime.longValue()) {
+                //token is not expireTime
+                headers.add(new BasicNameValuePair("Authorization", "Bearer " + access_token));
+            } else {
+                //token is expireTime
+                isAccessTokenExpired = true;
+                newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
+                headers.add(new BasicNameValuePair("Authorization",
+                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+            }
+            Map<String, String>
+                retNewMap =
+                sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
+            if (isAccessTokenExpired) {
+                // access_token 失效，本方法内进行重新获取过
+                retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
+                retMap.put(HX_ACCESS_TOKEN, newTokenMap.get(HX_ACCESS_TOKEN));
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            for (int i = 1; i <= 3; i++) {
+                if (null == retNewMap) {
+                    retNewMap =
+                        sendRequest(headers, addOneUser2GroupUrl, null, "delete", retMap);
+                } else {
+                    break;
+                }
+            }
+
+            if (null != retNewMap) {
+                return retNewMap;
+            }
+
+            if (null == retNewMap || retMap.size() == 0) {
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                groupId = DateTime.now() + " removeGroup fail,群组号：" + groupId + "\n";
+                fileWriter.write(groupId);
+                fileWriter.close();
+                return retNewMap;
+            }
+
+        } catch (Exception e) {
+            logger.error("removeGroup Exception--->" + e);
+            try {
+                FileWriter fileWriter = new FileWriter(recordErrorFile, true);
+                groupId =
+                    DateTime.now() + " removeGroup Exception fail,群组号：" + groupId + "\n";
+                fileWriter.write(groupId);
+                fileWriter.close();
+            } catch (IOException e1) {
+                logger.error("removeGroup IOException--->" + e);
+            }
+        }
+        return retMap;
+    }
+
+
+    /**
      * 发送请求
      */
 

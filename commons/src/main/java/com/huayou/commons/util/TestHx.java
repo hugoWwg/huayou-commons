@@ -46,7 +46,7 @@ public class TestHx {
 //        }
 //
 //        String groupId = retMap.get("groupId");
-
+//
 //        retMap = hxRequest.addOneUser2Group("huayouapp", "huayoutest",
 //                                            groupId, "115",
 //                                            hx_access_token,
@@ -70,10 +70,29 @@ public class TestHx {
         users.add(h6);
 
         retMap = hxRequest.addUsers2Group("huayouapp", "huayoutest",
-                                          "1433230960248149", users,
+                                          "1433297431142366", users,
                                           hx_access_token,
                                           clientId, client_secret,
                                           _hx_token_expire_time, null);
+
+//
+//        retMap = hxRequest.removeUser2Group("huayouapp", "huayoutest",
+//                                            "1433230960248149", "5",
+//                                            hx_access_token,
+//                                            clientId, client_secret,
+//                                            _hx_token_expire_time, null);
+
+//        retMap = hxRequest.updateGroupInfo("huayouapp", "huayoutest",
+//                                           "1433230960248149", "huayou_test_group",
+//                                           "huayou_test_group", "100000000000",
+//                                           hx_access_token,
+//                                           clientId, client_secret,
+//                                           _hx_token_expire_time, null);
+
+//        retMap = hxRequest.removeGroup("huayouapp", "huayoutest",
+//                                       "1433230960248149", hx_access_token,
+//                                       clientId, client_secret,
+//                                       _hx_token_expire_time, null);
 
         System.out.println(JSON.toJSONString(retMap));
 
