@@ -987,13 +987,9 @@ public class HXRequest {
                                                  Object dataBody, String method,
                                                  Map<String, String> retMap,
                                                  Map<String, String> retNewMap) {
-        for (int i = 1; i <= 3; i++) {
-            if (null == retNewMap) {
-                retNewMap =
-                    sendRequest(headers, requestUrl, dataBody, method, retMap);
-            } else {
-                break;
-            }
+
+        for(int i = 1; i <= 3 && null == retNewMap; ++i) {
+            retNewMap = this.sendRequest(headers, requestUrl, dataBody, method, retMap);
         }
         return retNewMap;
     }
