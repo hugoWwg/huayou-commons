@@ -1,10 +1,5 @@
 package com.huayou.commons.util;
 
-import com.google.common.collect.Lists;
-
-import com.alibaba.fastjson.JSON;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,23 +16,23 @@ public class TestHx {
 
     public void testHX() {
         HXRequest hxRequest = new HXRequest();
+        String clientId = "YXA6FT__IGO6EeSBDXdqMW3jAQ";
+        String client_secret = "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ";
+
         Map<String, String> tokenMap = hxRequest.getHXToken("huayouapp", "huayoutest",
-                                                            "YXA6FT__IGO6EeSBDXdqMW3jAQ",
-                                                            "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ");
+                                                            clientId, client_secret);
 
         String hx_access_token = tokenMap.get(HXRequest.HX_ACCESS_TOKEN);
         String hx_token_expire_time = tokenMap.get(HXRequest.HX_TOKEN_EXPIRE_TIME);
 
-        String clientId = "YXA6FT__IGO6EeSBDXdqMW3jAQ";
-        String client_secret = "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ";
         Long _hx_token_expire_time = Long.parseLong(hx_token_expire_time);
 
         Map<String, String> retMap = null;
 
 //        retMap = hxRequest.createGroup("huayouapp", "huayoutest",
-//                                       "hy_group_test1", "1",
-//                                       300, 1,
-//                                       "我的小组，仅供测试", hx_access_token,
+//                                       "hyGroup_test2", "1",
+//                                       100, 1,
+//                                       "画友群组测试小组，仅供内部测试使用，不需要申请审核。", hx_access_token,
 //                                       clientId, client_secret,
 //                                       _hx_token_expire_time, null);
 //
@@ -53,27 +48,27 @@ public class TestHx {
 //                                            clientId, client_secret,
 //                                            _hx_token_expire_time, null);
 
-        List<HXRequest.HuanxinUser> users = Lists.newArrayList();
+//        List<HXRequest.HuanxinUser> users = Lists.newArrayList();
+//
+//        HXRequest.HuanxinUser h1 = new HXRequest.HuanxinUser("7");
+//        HXRequest.HuanxinUser h2 = new HXRequest.HuanxinUser("2");
+//        HXRequest.HuanxinUser h3 = new HXRequest.HuanxinUser("3");
+//        HXRequest.HuanxinUser h4 = new HXRequest.HuanxinUser("4");
+//        HXRequest.HuanxinUser h5 = new HXRequest.HuanxinUser("5");
+//        HXRequest.HuanxinUser h6 = new HXRequest.HuanxinUser("6");
+//
+//        users.add(h1);
+//        users.add(h2);
+//        users.add(h3);
+//        users.add(h4);
+//        users.add(h5);
+//        users.add(h6);
 
-        HXRequest.HuanxinUser h1 = new HXRequest.HuanxinUser("7");
-        HXRequest.HuanxinUser h2 = new HXRequest.HuanxinUser("2");
-        HXRequest.HuanxinUser h3 = new HXRequest.HuanxinUser("3");
-        HXRequest.HuanxinUser h4 = new HXRequest.HuanxinUser("4");
-        HXRequest.HuanxinUser h5 = new HXRequest.HuanxinUser("5");
-        HXRequest.HuanxinUser h6 = new HXRequest.HuanxinUser("6");
-
-        users.add(h1);
-        users.add(h2);
-        users.add(h3);
-        users.add(h4);
-        users.add(h5);
-        users.add(h6);
-
-        retMap = hxRequest.addUsers2Group("huayouapp", "huayoutest",
-                                          "1433297431142366", users,
-                                          hx_access_token,
-                                          clientId, client_secret,
-                                          _hx_token_expire_time, null);
+//        retMap = hxRequest.addUsers2Group("huayouapp", "huayoutest",
+//                                          "1433297431142366", users,
+//                                          hx_access_token,
+//                                          clientId, client_secret,
+//                                          _hx_token_expire_time, null);
 
 //
 //        retMap = hxRequest.removeOneUser2Group("huayouapp", "huayoutest",
@@ -93,8 +88,8 @@ public class TestHx {
 //                                       "1433230960248149", hx_access_token,
 //                                       clientId, client_secret,
 //                                       _hx_token_expire_time, null);
-
-        System.out.println(JSON.toJSONString(retMap));
+//
+//        System.out.println(JSON.toJSONString(retMap));
 
 //        HXRequest.HuanxinUser h1 = new HXRequest.HuanxinUser("34056", "B0E2D929693B9DEC8D7FDB387DAE29F7");
 //        HXRequest.HuanxinUser h2 = new HXRequest.HuanxinUser("65001", "5180DE94622547EC653B22C6BB3FEB3F");
@@ -171,8 +166,9 @@ public class TestHx {
 //        hxRequest.batchCreateNewIMUsers("huayouapp", "huayoutest", users, "YXA6FT__IGO6EeSBDXdqMW3jAQ",
 //                "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ", hx_access_token, Long.parseLong(hx_token_expire_time), null);
 
-//        hxRequest.resetIMUserPassword("huayouapp", "huayoutest", "24507", "YXA6FT__IGO6EeSBDXdqMW3jAQ",
-//                "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ","F4DEE81ACBF9026C65644F5D969F674A",hx_access_token, Long.parseLong(hx_token_expire_time), null);
+//        hxRequest.resetIMUserPassword("huayouapp", "huayoutest", "24505", clientId,
+//                                      client_secret, "FA2A87A54A473524842663D950D69C1E",
+//                                      hx_access_token, Long.parseLong(hx_token_expire_time), null);
     }
 
 }
