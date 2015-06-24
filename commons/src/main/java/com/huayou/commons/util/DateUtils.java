@@ -96,5 +96,27 @@ public class DateUtils {
     public static Date daysBefore(int n) {
         return DateTime.now().minusDays(n).secondOfDay().getDateTime().toDate();
     }
+
+    //几个小时以前的时间
+    public static Date hoursBefore(int n) {
+        return DateTime.now().minusHours(n).secondOfDay().withMaximumValue().toDate();
+    }
+
+    //几个小时以后的时间
+    public static Date hoursAfter(int n) {
+        return DateTime.now().plusHours(n).secondOfDay().withMaximumValue().toDate();
+    }
+
+    //几分钟以前的时间
+    public static Date minuteBefore(int n) {
+        return DateTime.now().minusMinutes(n).secondOfDay().withMaximumValue().toDate();
+    }
+
+    //几分钟以后的时间
+    public static Date minuteAfter(int n) {
+        return DateTime.now().plusMinutes(n).secondOfDay().withMaximumValue().toDate();
+    }
+
+
 }
 
