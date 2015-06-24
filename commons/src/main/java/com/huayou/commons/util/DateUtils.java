@@ -91,5 +91,10 @@ public class DateUtils {
     public static Date daysAfter(int n) {
         return DateTime.now().plusDays(n).secondOfDay().getDateTime().toDate();
     }
+
+    //几天以前的时间
+    public static Date daysBefore(int n) {
+        return DateTime.now().minusDays(n).secondOfDay().getDateTime().toDate();
+    }
 }
 

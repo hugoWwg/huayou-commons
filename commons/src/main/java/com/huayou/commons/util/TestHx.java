@@ -1,5 +1,8 @@
 package com.huayou.commons.util;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +51,7 @@ public class TestHx {
 //                                            clientId, client_secret,
 //                                            _hx_token_expire_time, null);
 
-//        List<HXRequest.HuanxinUser> users = Lists.newArrayList();
+        List<HXRequest.HuanxinUser> users = Lists.newArrayList();
 //
 //        HXRequest.HuanxinUser h1 = new HXRequest.HuanxinUser("7");
 //        HXRequest.HuanxinUser h2 = new HXRequest.HuanxinUser("2");
@@ -130,7 +133,9 @@ public class TestHx {
 //            fdsds =
 //            new HXRequest.HuanxinUser("687763", "49DD6EF2576EA3BF4F95784FB3E49488");
 
-//        HXRequest.HuanxinUser fd= new HXRequest.HuanxinUser("20499", "8A0301EA1C7CF9531CF465BEE6365D61");
+        HXRequest.HuanxinUser
+            fd =
+            new HXRequest.HuanxinUser("686297", "015469CD8DA8DFB0A15EEADFA2A154DE");
 
 //        users.add(h1);
 //        users.add(h2);
@@ -161,14 +166,16 @@ public class TestHx {
 //        users.add(fdsds);
 //        users.add(ewrwe);
 //        users.add(ewr);
-//        users.add(fd);
+        users.add(fd);
 //////
-//        hxRequest.batchCreateNewIMUsers("huayouapp", "huayoutest", users, "YXA6FT__IGO6EeSBDXdqMW3jAQ",
-//                "YXA67pwcc_IbqWIDEIcxXdwJBopK4iQ", hx_access_token, Long.parseLong(hx_token_expire_time), null);
-
-//        hxRequest.resetIMUserPassword("huayouapp", "huayoutest", "24505", clientId,
-//                                      client_secret, "FA2A87A54A473524842663D950D69C1E",
-//                                      hx_access_token, Long.parseLong(hx_token_expire_time), null);
+//        hxRequest
+//            .batchCreateNewIMUsers("huayouapp", "huayoutest", users, clientId,
+//                                   client_secret, hx_access_token,
+//                                   Long.parseLong(hx_token_expire_time), null);
+//
+        hxRequest.resetIMUserPassword("huayouapp", "huayoutest", "703273", clientId,
+                                      client_secret, "F641FC71CB3E2296228BB2758200D5A4",
+                                      hx_access_token, _hx_token_expire_time, null);
     }
 
 }
