@@ -340,7 +340,8 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap, retNewMap);
+                retrySendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap,
+                                 retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -493,6 +494,8 @@ public class HXRequest {
             jSONObject.put("public", true);
             jSONObject.put("maxusers", maxUsers);
             jSONObject.put("owner", owner);
+            String[] members = {owner};
+            jSONObject.put("members", members);
             Boolean _approval = approval == 1 ? true : false;
             jSONObject.put("approval", _approval);
 
@@ -786,7 +789,8 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap, retNewMap);
+                retrySendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap,
+                                 retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -988,7 +992,7 @@ public class HXRequest {
                                                  Map<String, String> retMap,
                                                  Map<String, String> retNewMap) {
 
-        for(int i = 1; i <= 3 && null == retNewMap; ++i) {
+        for (int i = 1; i <= 3 && null == retNewMap; ++i) {
             retNewMap = this.sendRequest(headers, requestUrl, dataBody, method, retMap);
         }
         return retNewMap;
