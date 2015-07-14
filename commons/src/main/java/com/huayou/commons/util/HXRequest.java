@@ -118,11 +118,11 @@ public class HXRequest {
         if (isSSL) {
             X509TrustManager xtm = new X509TrustManager() {
                 public void checkClientTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
+                        throws CertificateException {
                 }
 
                 public void checkServerTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
+                        throws CertificateException {
                 }
 
                 public X509Certificate[] getAcceptedIssuers() {
@@ -138,7 +138,7 @@ public class HXRequest {
                 SSLSocketFactory socketFactory = new SSLSocketFactory(ctx);
 
                 httpClient.getConnectionManager().getSchemeRegistry().register(
-                    new Scheme("https", 443, socketFactory));
+                        new Scheme("https", 443, socketFactory));
 
             } catch (Exception e) {
                 logger.error("getHXToken Exception--->" + e);
@@ -163,7 +163,7 @@ public class HXRequest {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return createNewIMUserSingle(orgName, appName, IMUserName, IMPassword, clientId,
-                                     clientSecret, access_token, expireTime, recordErrorFile);
+                clientSecret, access_token, expireTime, recordErrorFile);
     }
 
     /**
@@ -196,12 +196,12 @@ public class HXRequest {
                 //token is expireTime
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -212,7 +212,7 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap, retNewMap);
+                    retrySendRequest(headers, registerIMUserUrl, jSONObject, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -221,7 +221,7 @@ public class HXRequest {
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName =
-                    DateTime.now() + " createNewIMUserSingle fail,用户名：" + IMUserName + "\n";
+                        DateTime.now() + " createNewIMUserSingle fail,用户名：" + IMUserName + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
                 return retNewMap;
@@ -232,7 +232,7 @@ public class HXRequest {
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName =
-                    DateTime.now() + " createNewIMUserSingle Exception,用户名：" + IMUserName + "\n";
+                        DateTime.now() + " createNewIMUserSingle Exception,用户名：" + IMUserName + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
             } catch (IOException e1) {
@@ -323,12 +323,12 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap);
 
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
@@ -340,8 +340,8 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap,
-                                 retNewMap);
+                    retrySendRequest(headers, batchRegisterIMUserUrl, jsonData, "post", retMap,
+                            retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -352,8 +352,8 @@ public class HXRequest {
                 String errorUserNameStr = "";
                 for (HuanxinUser huanxinUser : readyUsers) {
                     errorUserNameStr +=
-                        DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser
-                            .getUsername() + "\n";
+                            DateTime.now() + " batchCreateNewIMUsers fail,用户名：" + huanxinUser
+                                    .getUsername() + "\n";
                 }
                 fileWriter.write(errorUserNameStr);
                 fileWriter.close();
@@ -367,8 +367,8 @@ public class HXRequest {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 for (HuanxinUser huanxinUser : readyUsers) {
                     errorUserNameStr +=
-                        DateTime.now() + " batchCreateNewIMUsers Exception,用户名：" + huanxinUser
-                            .getUsername() + "\n";
+                            DateTime.now() + " batchCreateNewIMUsers Exception,用户名：" + huanxinUser
+                                    .getUsername() + "\n";
                 }
                 fileWriter.write(errorUserNameStr);
                 fileWriter.close();
@@ -393,7 +393,7 @@ public class HXRequest {
             expireTime = Long.parseLong(tokenExpireTime);
         }
         return resetIMUserPassword(orgName, appName, IMUserName, clientId, clientSecret,
-                                   newPassword, access_token, expireTime, recordErrorFile);
+                newPassword, access_token, expireTime, recordErrorFile);
     }
 
     /**
@@ -407,8 +407,8 @@ public class HXRequest {
 
         Map<String, String> retMap = Maps.newHashMap();
         String
-            resetIMUserPasswordUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
+                resetIMUserPasswordUrl =
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/users/" + IMUserName + "/password";
 
         try {
             JSONObject jSONObject = new JSONObject();
@@ -425,11 +425,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "put", retMap);
+                    retNewMap =
+                    sendRequest(headers, resetIMUserPasswordUrl, jSONObject, "put", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -440,7 +440,7 @@ public class HXRequest {
             }
 
             retNewMap = retrySendRequest(headers, resetIMUserPasswordUrl,
-                                         jSONObject, "put", retMap, retNewMap);
+                    jSONObject, "put", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -459,7 +459,7 @@ public class HXRequest {
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 IMUserName =
-                    DateTime.now() + " resetIMUserPassword Exception fail,用户名：" + IMUserName + "\n";
+                        DateTime.now() + " resetIMUserPassword Exception fail,用户名：" + IMUserName + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
             } catch (IOException e1) {
@@ -511,11 +511,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, createGroupUrl, jSONObject, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, createGroupUrl, jSONObject, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -531,7 +531,7 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, createGroupUrl, jSONObject, "post", retMap, retNewMap);
+                    retrySendRequest(headers, createGroupUrl, jSONObject, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 String groupIdString = retMap.get("data");
@@ -543,7 +543,12 @@ public class HXRequest {
 
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                owner = DateTime.now() + " createGroup fail,用户名：" + owner + "\n";
+                owner = DateTime.now() + " createGroup fail,用户名："
+                        + owner + " 群组名：" + groupName +
+                        " 群组简介：" + desc +
+                        " 群组人数上限：" + maxUsers +
+                        " 群组成员：" + members +
+                        " 群组加群审核状态：" + approval + "\n";
                 fileWriter.write(owner);
                 fileWriter.close();
                 return retNewMap;
@@ -553,8 +558,11 @@ public class HXRequest {
             logger.error("createGroup Exception--->" + e);
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                owner =
-                    DateTime.now() + " createGroup Exception fail,用户名：" + owner + "\n";
+                owner = DateTime.now() + " createGroup fail,用户名："
+                        + owner + " 群组名：" + groupName +
+                        " 群组简介：" + desc +
+                        " 群组人数上限：" + maxUsers +
+                        " 群组加群审核状态：" + approval + "\n";
                 fileWriter.write(owner);
                 fileWriter.close();
             } catch (IOException e1) {
@@ -580,8 +588,8 @@ public class HXRequest {
 
         Map<String, String> retMap = Maps.newHashMap();
         String addOneUser2GroupUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" +
-            groupId + "/users/" + IMUserName;
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" +
+                        groupId + "/users/" + IMUserName;
 
         try {
             List<NameValuePair> headers = Lists.newArrayList();
@@ -596,11 +604,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, addOneUser2GroupUrl, null, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, addOneUser2GroupUrl, null, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -612,7 +620,7 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, addOneUser2GroupUrl, null, "post", retMap, retNewMap);
+                    retrySendRequest(headers, addOneUser2GroupUrl, null, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -620,7 +628,8 @@ public class HXRequest {
 
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                IMUserName = DateTime.now() + " addOneUser2Group fail,用户名：" + IMUserName + "\n";
+                IMUserName = DateTime.now() + " addOneUser2Group fail,用户名："
+                        + IMUserName + "环信小组号：groupId：" + groupId + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
                 return retNewMap;
@@ -630,8 +639,8 @@ public class HXRequest {
             logger.error("addOneUser2Group Exception--->" + e);
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                IMUserName =
-                    DateTime.now() + " addOneUser2Group Exception fail,用户名：" + IMUserName + "\n";
+                IMUserName = DateTime.now() + " addOneUser2Group fail,用户名："
+                        + IMUserName + "环信小组号：groupId：" + groupId + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
             } catch (IOException e1) {
@@ -657,7 +666,7 @@ public class HXRequest {
 
         Map<String, String> retMap = Maps.newHashMap();
         String addUsers2GroupUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId + "/users";
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId + "/users";
         List<String> readyUsers = Lists.newArrayListWithCapacity(users.size());
 
         try {
@@ -688,12 +697,12 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
 
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, addUsers2GroupUrl, requestDataBody, "post", retMap);
+                    retNewMap =
+                    sendRequest(headers, addUsers2GroupUrl, requestDataBody, "post", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -705,7 +714,7 @@ public class HXRequest {
             }
 
             retNewMap = retrySendRequest(headers, addUsers2GroupUrl,
-                                         requestDataBody, "post", retMap, retNewMap);
+                    requestDataBody, "post", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -716,7 +725,8 @@ public class HXRequest {
                 String errorUserNameStr = "";
                 for (String userName : readyUsers) {
                     errorUserNameStr +=
-                        DateTime.now() + " addUsers2Group fail,用户名：" + userName + "\n";
+                            DateTime.now() + " addUsers2Group fail,用户名："
+                                    + userName + "环信小组号：groupId：" + groupId + "\n";
                 }
                 fileWriter.write(errorUserNameStr);
                 fileWriter.close();
@@ -730,7 +740,8 @@ public class HXRequest {
                 String errorUserNameStr = "";
                 for (String userName : readyUsers) {
                     errorUserNameStr +=
-                        DateTime.now() + " addUsers2Group Exception,用户名：" + userName + "\n";
+                            DateTime.now() + " addUsers2Group fail,用户名："
+                                    + userName + "环信小组号：groupId：" + groupId + "\n";
                 }
                 fileWriter.write(errorUserNameStr);
                 fileWriter.close();
@@ -757,8 +768,8 @@ public class HXRequest {
 
         Map<String, String> retMap = Maps.newHashMap();
         String removeOneUser2GroupUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" +
-            groupId + "/users/" + IMUserName;
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" +
+                        groupId + "/users/" + IMUserName;
 
         try {
             List<NameValuePair> headers = Lists.newArrayList();
@@ -773,11 +784,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap);
+                    retNewMap =
+                    sendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -789,8 +800,8 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap,
-                                 retNewMap);
+                    retrySendRequest(headers, removeOneUser2GroupUrl, null, "delete", retMap,
+                            retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -798,7 +809,8 @@ public class HXRequest {
 
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                IMUserName = DateTime.now() + " removeOneUser2Group fail,用户名：" + IMUserName + "\n";
+                IMUserName = DateTime.now() + " removeOneUser2Group fail,用户名："
+                        + IMUserName + "环信小组号：groupId：" + groupId + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
                 return retNewMap;
@@ -808,8 +820,8 @@ public class HXRequest {
             logger.error("removeOneUser2Group Exception--->" + e);
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                IMUserName =
-                    DateTime.now() + " removeOneUser2Group Exception fail,用户名：" + IMUserName + "\n";
+                IMUserName = DateTime.now() + " removeOneUser2Group fail,用户名："
+                        + IMUserName + "环信小组号：groupId：" + groupId + "\n";
                 fileWriter.write(IMUserName);
                 fileWriter.close();
             } catch (IOException e1) {
@@ -835,13 +847,13 @@ public class HXRequest {
         }
 
         if (Strings.isNullOrEmpty(groupName) && Strings.isNullOrEmpty(description)
-            && Strings.isNullOrEmpty(maxUsers)) {
+                && Strings.isNullOrEmpty(maxUsers)) {
             throw new RuntimeException("parameter should not be empty!");
         }
 
         Map<String, String> retMap = Maps.newHashMap();
         String updateGroupInfoUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
 
         JSONObject jSONObject = new JSONObject();
         jSONObject.put("groupname", groupName);
@@ -861,11 +873,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, updateGroupInfoUrl, jSONObject, "put", retMap);
+                    retNewMap =
+                    sendRequest(headers, updateGroupInfoUrl, jSONObject, "put", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -877,7 +889,7 @@ public class HXRequest {
             }
 
             retNewMap = retrySendRequest(headers, updateGroupInfoUrl,
-                                         jSONObject, "put", retMap, retNewMap);
+                    jSONObject, "put", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -886,9 +898,9 @@ public class HXRequest {
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 groupName = DateTime.now() + " updateGroupInfo fail,"
-                            + "修改信息如下: 群组名(groupName)：" +
-                            groupName + ",描述(description)为：" + description +
-                            ",成员上限(maxUsers)为：" + maxUsers + "\n";
+                        + "修改信息如下: 环信群组号(groupId)" + groupId + "群组名(groupName)：" +
+                        groupName + ",描述(description)为：" + description +
+                        ",成员上限(maxUsers)为：" + maxUsers + "\n";
                 fileWriter.write(groupName);
                 fileWriter.close();
                 return retNewMap;
@@ -898,10 +910,10 @@ public class HXRequest {
             logger.error("updateGroupInfo Exception--->" + e);
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                groupName = DateTime.now() + " updateGroupInfo Exception fail,"
-                            + "修改信息如下: 群组名(groupName)：" +
-                            groupName + ",描述(description)为：" + description +
-                            ",成员上限(maxUsers)为：" + maxUsers + "\n";
+                groupName = DateTime.now() + " updateGroupInfo fail,"
+                        + "修改信息如下: 环信群组号(groupId)" + groupId + "群组名(groupName)：" +
+                        groupName + ",描述(description)为：" + description +
+                        ",成员上限(maxUsers)为：" + maxUsers + "\n";
                 fileWriter.write(groupName);
                 fileWriter.close();
             } catch (IOException e1) {
@@ -926,7 +938,7 @@ public class HXRequest {
 
         Map<String, String> retMap = Maps.newHashMap();
         String removeGroupUrl =
-            HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
+                HX_DOMAIN_NAME + orgName + "/" + appName + "/chatgroups/" + groupId;
 
         try {
             List<NameValuePair> headers = Lists.newArrayList();
@@ -941,11 +953,11 @@ public class HXRequest {
                 isAccessTokenExpired = true;
                 newTokenMap = getHXToken(orgName, appName, clientId, clientSecret);
                 headers.add(new BasicNameValuePair("Authorization",
-                                                   "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
+                        "Bearer " + newTokenMap.get(HX_ACCESS_TOKEN)));
             }
             Map<String, String>
-                retNewMap =
-                sendRequest(headers, removeGroupUrl, null, "delete", retMap);
+                    retNewMap =
+                    sendRequest(headers, removeGroupUrl, null, "delete", retMap);
             if (isAccessTokenExpired) {
                 // access_token 失效，本方法内进行重新获取过
                 retMap.put(HX_TOKEN_EXPIRE_TIME, newTokenMap.get(HX_TOKEN_EXPIRE_TIME));
@@ -957,7 +969,7 @@ public class HXRequest {
             }
 
             retNewMap =
-                retrySendRequest(headers, removeGroupUrl, null, "delete", retMap, retNewMap);
+                    retrySendRequest(headers, removeGroupUrl, null, "delete", retMap, retNewMap);
 
             if (null != retNewMap) {
                 return retNewMap;
@@ -965,7 +977,7 @@ public class HXRequest {
 
             if (null == retNewMap || retMap.size() == 0) {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
-                groupId = DateTime.now() + " removeGroup fail,群组号：" + groupId + "\n";
+                groupId = DateTime.now() + " removeGroup fail,环信群组号：" + groupId + "\n";
                 fileWriter.write(groupId);
                 fileWriter.close();
                 return retNewMap;
@@ -976,7 +988,7 @@ public class HXRequest {
             try {
                 FileWriter fileWriter = new FileWriter(recordErrorFile, true);
                 groupId =
-                    DateTime.now() + " removeGroup Exception fail,群组号：" + groupId + "\n";
+                        DateTime.now() + " removeGroup Exception fail,环信群组号：" + groupId + "\n";
                 fileWriter.write(groupId);
                 fileWriter.close();
             } catch (IOException e1) {
