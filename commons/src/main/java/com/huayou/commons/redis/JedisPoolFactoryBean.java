@@ -95,7 +95,8 @@ public class JedisPoolFactoryBean implements FactoryBean<JedisPool> {
         JedisPoolConfig poolConfig = JedisUtils.createPoolConfig(threadCount, threadCount,
                                                                  checkingIntervalSecs,
                                                                  idleTimeSecs);
-        // make sure borrow a jedis available
+
+        // 在获取连接的时候检查有效性, make sure borrow a jedis available
         poolConfig.setTestOnBorrow(true);
         // 扫描idle，如果validate失败，则会在pool中drop。
         poolConfig.setTestWhileIdle(true);

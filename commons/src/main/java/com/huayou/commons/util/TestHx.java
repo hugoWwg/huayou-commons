@@ -32,21 +32,21 @@ public class TestHx {
 
         Map<String, String> retMap = null;
 
-        retMap = hxRequest.createGroup("huayouapp", "huayoutest",
-                                       "画友小组测试", "1",
-                                       100, 1,
-                                       "画友群组测试小组，仅供内部测试使用，不需要申请审核。", hx_access_token,
-                                       clientId, client_secret,
-                                       _hx_token_expire_time, null);
-
-        if (retMap.size() == 0) {
-            return;
-        }
-
-        System.out.println(retMap);
-        String groupId = retMap.get("groupId");
-
-        System.out.println(groupId);
+//        retMap = hxRequest.createGroup("huayouapp", "huayoutest",
+//                                       "画友小组测试", "1",
+//                                       100, 1,
+//                                       "画友群组测试小组，仅供内部测试使用，不需要申请审核。", hx_access_token,
+//                                       clientId, client_secret,
+//                                       _hx_token_expire_time, null);
+//
+//        if (retMap.size() == 0) {
+//            return;
+//        }
+//
+//        System.out.println(retMap);
+//        String groupId = retMap.get("groupId");
+//
+//        System.out.println(groupId);
 //
 //        retMap = hxRequest.addOneUser2Group("huayouapp", "huayoutest",
 //                                            groupId, "115",
@@ -136,9 +136,9 @@ public class TestHx {
 //            fdsds =
 //            new HXRequest.HuanxinUser("687763", "49DD6EF2576EA3BF4F95784FB3E49488");
 
-        HXRequest.HuanxinUser
-            fd =
-            new HXRequest.HuanxinUser("686297", "015469CD8DA8DFB0A15EEADFA2A154DE");
+//        HXRequest.HuanxinUser
+//            fd =
+//            new HXRequest.HuanxinUser("686297", "015469CD8DA8DFB0A15EEADFA2A154DE");
 
 //        users.add(h1);
 //        users.add(h2);
@@ -169,16 +169,16 @@ public class TestHx {
 //        users.add(fdsds);
 //        users.add(ewrwe);
 //        users.add(ewr);
-        users.add(fd);
+//        users.add(fd);
 //////
 //        hxRequest
 //            .batchCreateNewIMUsers("huayouapp", "huayoutest", users, clientId,
 //                                   client_secret, hx_access_token,
 //                                   Long.parseLong(hx_token_expire_time), null);
 //
-//        hxRequest.resetIMUserPassword("huayouapp", "huayoutest", "703273", clientId,
-//                                      client_secret, "F641FC71CB3E2296228BB2758200D5A4",
-//                                      hx_access_token, _hx_token_expire_time, null);
+        hxRequest.resetIMUserPassword("huayouapp", "huayoutest", "9", clientId,
+                                      client_secret, "1CA35CBDCE3111160770C57604F1DB04",
+                                      hx_access_token, _hx_token_expire_time, null);
     }
 
 }

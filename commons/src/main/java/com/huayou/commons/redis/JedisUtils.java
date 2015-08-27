@@ -1,12 +1,13 @@
 package com.huayou.commons.redis;
 
 import org.apache.commons.beanutils.MethodUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
 
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Protocol;
 
 @Deprecated
 /**
@@ -44,7 +45,8 @@ public class JedisUtils {
             } catch (Exception ignored) {
             }
         }
-        poolConfig.setTimeBetweenEvictionRunsMillis(-1);
+        //逐出扫描的时间间隔(毫秒) 如果为负数,则不运行逐出线程, 默认-1
+//        poolConfig.setTimeBetweenEvictionRunsMillis(-1); //不执行idle checking 扫描
         return poolConfig;
     }
 

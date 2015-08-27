@@ -3,17 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>huayou-parent</artifactId>
+        <artifactId>huayou-commons-parent</artifactId>
         <groupId>com.huayou</groupId>
         <version>1.0.0</version>
-        <relativePath>../parent/</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <distributionManagement>
-        <repository>
-            <id>huayou-release</id>
-            <url>http://192.168.10.15:8081/nexus/content/repositories/huayou</url>
-        </repository>
+        <snapshotRepository>
+            <id>huayou-snapshots</id>
+            <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <modelVersion>4.0.0</modelVersion>

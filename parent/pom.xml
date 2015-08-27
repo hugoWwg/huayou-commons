@@ -4,16 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.huayou</groupId>
-    <artifactId>huayou-parent</artifactId>
+    <artifactId>huayou-commons-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
-    <name>huayou-parent</name>
+    <name>huayou-commons-parent</name>
 
     <distributionManagement>
-        <repository>
-            <id>huayou-release</id>
-            <url>http://192.168.10.15:8081/nexus/content/repositories/huayou</url>
-        </repository>
+        <snapshotRepository>
+            <id>huayou-snapshots</id>
+            <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <properties>
@@ -27,7 +27,7 @@
         <jackson.version>2.2.3</jackson.version>
         <spring.version>3.2.4.RELEASE</spring.version>
         <sitemesh.version>2.4.2</sitemesh.version>
-        <httpclient.version>4.3.1</httpclient.version>
+        <httpclient.version>4.3.5</httpclient.version>
         <!-- Plugin的属性定义 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.7</jdk.version>

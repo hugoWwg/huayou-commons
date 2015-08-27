@@ -29,10 +29,10 @@
     </developers>
 
     <distributionManagement>
-        <repository>
-            <id>huayou-release</id>
-            <url>http://192.168.10.15:8081/nexus/content/repositories/huayou</url>
-        </repository>
+        <snapshotRepository>
+            <id>huayou-snapshots</id>
+            <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
 </project>
