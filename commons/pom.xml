@@ -5,14 +5,14 @@
     <parent>
         <artifactId>huayou-commons-parent</artifactId>
         <groupId>com.huayou</groupId>
-        <version>1.0.0</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>huayou-snapshots</id>
-            <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+            <id>huayou-sanpshots</id>
+            <url>http://192.168.10.15:8081/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
