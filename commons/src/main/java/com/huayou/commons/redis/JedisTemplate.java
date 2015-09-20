@@ -3,14 +3,16 @@ package com.huayou.commons.redis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.SerializationUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.List;
 import java.util.Set;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisException;
 
 @Deprecated
 /**
@@ -219,6 +221,23 @@ public class JedisTemplate {
     public Integer getAsInt(final String key) {
         String result = get(key);
         return result != null ? Integer.valueOf(result) : 0;
+    }
+
+    /**
+     * 监控一个key并设置，保证在一个事务范围内。
+     */
+    public void watchKeyAndSet(final String key, final String value, final int seconds) {
+        execute(new JedisActionNoResult() {
+
+            @Override
+            public void action(Jedis jedis) {
+                jedis.watch(key);
+                Transaction transaction = jedis.multi();
+                transaction.setex(key, seconds, value);
+                transaction.exec();
+                jedis.unwatch();
+            }
+        });
     }
 
     public void set(final String key, final String value) {
